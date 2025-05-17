@@ -3,7 +3,8 @@
 // client/src/context/categorycontext.jsx
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // named export of context
 export const CategoryContext = createContext({

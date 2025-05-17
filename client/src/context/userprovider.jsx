@@ -1,6 +1,8 @@
 // client/src/context/userprovider.jsx
 import React, { useState, useEffect } from "react";
 import { UserContext } from "./usercontext";
+const API = import.meta.env.VITE_API_URL;
+
 
 const defaultProfile = { avatarUrl: "", fullName: "" };
 
@@ -15,7 +17,7 @@ export const UserProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:5000/api/profile", {
+    fetch(`${API}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())

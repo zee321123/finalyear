@@ -10,6 +10,7 @@ import {
   FaCrown, // ✅ Added premium crown icon
 } from 'react-icons/fa';
 import { loadStripe } from '@stripe/stripe-js';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // ✅ Replace with your actual Stripe publishable key
 const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY');
@@ -17,7 +18,7 @@ const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY');
 export default function Upgrade() {
   const handleBuyPremium = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/payment/create-checkout-session', {
+      const res = await fetch(`${API_URL}/api/payment/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

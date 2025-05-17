@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa";
 import { UserContext } from "../context/usercontext";
 import "./Sidebar.css";
+const API = import.meta.env.VITE_API_URL;
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +27,7 @@ const Sidebar = () => {
   }, []);
 
   const avatarSrc = profile.avatarUrl
-    ? `http://localhost:5000${profile.avatarUrl}`
+   ? `${API}${profile.avatarUrl}`
     : "https://ui-avatars.com/api/?name=User&background=1abc9c&color=fff&rounded=true";
 
   return (

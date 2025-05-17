@@ -3,6 +3,8 @@ import "./header.css";
 import { FiBell, FiSearch } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SearchContext } from "../context/searchcontext";
+const API = import.meta.env.VITE_API_URL;
+
 
 const Header = () => {
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
@@ -24,7 +26,7 @@ const Header = () => {
     const checkPremiumStatus = async () => {
       try {
         console.log("📡 Fetching profile with token...");
-        const res = await fetch("http://localhost:5000/api/profile", {
+        const res = await fetch(`${API}/api/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -55,7 +57,7 @@ const Header = () => {
 
     const fetchNotifications = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/notifications", {
+        const res = await fetch(`${API}/api/notifications`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"

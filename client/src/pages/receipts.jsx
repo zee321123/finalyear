@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import './receipts.css';
 import { SearchContext } from '../context/searchcontext';
+const API = import.meta.env.VITE_API_URL;
+
 
 export default function Receipts() {
   const [receipts, setReceipts] = useState([]);
@@ -20,7 +22,7 @@ export default function Receipts() {
       const start = Date.now();
 
       // 1. Fetch categories
-      const categoryRes = await axios.get('http://localhost:5000/api/categories', { headers });
+      const categoryRes = await axios.get(`${API}/api/categories`, { headers });
       const map = {};
       categoryRes.data.forEach(cat => {
         map[cat._id || cat.id] = cat.name;
@@ -28,12 +30,12 @@ export default function Receipts() {
       setCategoryMap(map);
 
       // 2. Fetch receipts
-      const receiptRes = await axios.get('http://localhost:5000/api/receipts', { headers });
+      const receiptRes = await axios.get(`${API}/api/receipts`, { headers });
       setReceipts(receiptRes.data);
 
       // 3. Fetch images in parallel
       await Promise.all(receiptRes.data.map(r =>
-        axios.get(`http://localhost:5000/api/receipts/${r.id}`, {
+        axios.get(`${API}/api/receipts/${r.id}`, {
           headers,
           responseType: 'blob'
         })

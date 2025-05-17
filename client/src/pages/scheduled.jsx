@@ -4,7 +4,8 @@ import { FiEdit2, FiTrash2, FiSave, FiXCircle, FiCheckCircle } from 'react-icons
 import { SearchContext } from '../context/searchcontext';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL;
+
 
 export default function Scheduled() {
   const [rules, setRules] = useState([]);
@@ -32,7 +33,7 @@ export default function Scheduled() {
     const start = Date.now();
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/scheduled`, {
+      const res = await fetch(`${API}/api/scheduled`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -56,7 +57,7 @@ export default function Scheduled() {
 
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get(`${API_URL}/api/profile`, {
+        const { data } = await axios.get(`${API}/api/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(data);
@@ -75,7 +76,7 @@ export default function Scheduled() {
 
   const confirmDelete = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/scheduled/${ruleToDelete}`, {
+      const res = await fetch(`${API}/api/scheduled/${ruleToDelete}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -98,8 +99,8 @@ export default function Scheduled() {
     setSuccess(null);
     try {
       const url = editingRuleId
-        ? `${API_URL}/api/scheduled/${editingRuleId}`
-        : `${API_URL}/api/scheduled`;
+         ? `${API}/api/scheduled/${editingRuleId}`
+  : `${API}/api/scheduled`;
       const method = editingRuleId ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,

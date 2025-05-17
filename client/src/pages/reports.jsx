@@ -6,6 +6,8 @@ import './reports.css';
 import { CategoryContext } from '../context/categorycontext';
 import { SearchContext } from '../context/searchcontext';
 import { FaFileCsv, FaFilePdf } from 'react-icons/fa';
+const API = import.meta.env.VITE_API_URL;
+
 
 export default function Reports() {
   const { categories } = useContext(CategoryContext);
@@ -44,11 +46,11 @@ export default function Reports() {
 
     const fetchData = async () => {
       try {
-        const reportPromise = fetch(`http://localhost:5000/api/reports?${params}`, {
+        const reportPromise = fetch(`${API}/api/reports?${params}`, {
           headers: { Authorization: `Bearer ${token}` }
         }).then(r => r.ok ? r.json() : Promise.reject(`Status ${r.status}`));
 
-        const txnPromise = fetch('http://localhost:5000/api/transactions', {
+        const txnPromise = fetch(`${API}/api/transactions`, {
           headers: { Authorization: `Bearer ${token}` }
         }).then(r => r.ok ? r.json() : Promise.reject(`Status ${r.status}`));
 
@@ -93,7 +95,7 @@ export default function Reports() {
   const exportCSV = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch('http://localhost:5000/api/export/csv', {
+      const res = await fetch(`${API}/api/export/csv`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -116,7 +118,7 @@ export default function Reports() {
   const exportPDF = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch('http://localhost:5000/api/export/pdf', {
+      const res = await fetch(`${API}/api/export/pdf`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });

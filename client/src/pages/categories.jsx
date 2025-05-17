@@ -14,7 +14,8 @@ import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 export default function Categories() {
   const { categories, fetchCategories } = useContext(CategoryContext);
