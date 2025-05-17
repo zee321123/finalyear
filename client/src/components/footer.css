@@ -1,0 +1,93 @@
+/* client/src/components/footer.css */
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(to right, #1abc9c, #1f7aec); /* MoneyTrack theme */
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+  margin-top: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.footer-section {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.footer-section.left p {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.footer-section.center a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.3s ease;
+}
+
+.footer-section.center a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background: #ffffff;
+  transition: width 0.3s ease;
+}
+
+.footer-section.center a:hover {
+  color: #f0f0f0;
+}
+
+.footer-section.center a:hover::after {
+  width: 100%;
+}
+
+.footer-section.right span {
+  margin-right: 0.5rem;
+  font-weight: 500;
+}
+
+.footer-section.right a {
+  color: #ffffff;
+  font-size: 1.25rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.footer-section.right a:hover {
+  transform: scale(1.2);
+  color: #f0f0f0;
+}
+
+/* 🔁 Responsive Footer */
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-section {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .footer-section.center {
+    margin: 1rem 0;
+  }
+}

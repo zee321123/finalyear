@@ -1,0 +1,103 @@
+.support-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+  
+  .support-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #000000;
+  }
+  
+  .support-page h2 {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+    color: black;
+  }
+  
+  .support-page a {
+    color: #1abc9c;
+    text-decoration: none;
+  }
+  
+
+.social-links {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.social-links h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: black;
+}
+
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.icon {
+  font-size: 2.5rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
+
+.icon.instagram {
+  color: #e1306c;
+}
+
+.icon.telegram {
+  color: #0088cc;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+  opacity: 0.85;
+}
+
+.faq-container {
+  margin-top: 1rem;
+  border-top: 1px solid #ccc;
+}
+
+.faq-item {
+  border-bottom: 1px solid #eee;
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.faq-item:hover {
+  background: #f9f9f9;
+}
+
+.faq-question {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-icon {
+  margin-left: 1rem;
+  font-size: 1rem;
+  color: #1abc9c;
+}
+
+.faq-answer {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+.faq-item.open .faq-question {
+  color: #1abc9c;
+}

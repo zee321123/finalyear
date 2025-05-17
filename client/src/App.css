@@ -1,0 +1,32 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff; /* ✅ Set to white */
+  color: #1f2937; /* Optional: dark text for contrast */
+}
+
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ffffff; /* ✅ Ensure wrapper is also white */
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin-left: 0;
+  background-color: #ffffff; /* ✅ Avoid side silver areas */
+}
+
+@media (min-width: 769px) {
+  .layout-wrapper {
+    flex-direction: row;
+  }
+
+  .main-content {
+    margin-left: 220px;
+    padding: 40px;
+  }
+}

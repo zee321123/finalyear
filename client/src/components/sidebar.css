@@ -1,0 +1,217 @@
+:root {
+  --sidebar-width: 240px;
+  --gradient-start: #2c3e50;
+  --gradient-end: #34495e;
+  --accent-color: #1abc9c;
+  --text-color: #ecf0f1;
+  --text-muted: #bdc3c7;
+  --hover-glow: rgba(255, 255, 255, 0.08);
+  --active-glow: rgba(26, 188, 156, 0.6);
+  --sidebar-padding: 32px 20px;
+}
+
+/* ✅ Full Sidebar Layout */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: linear-gradient(180deg, var(--gradient-start), var(--gradient-end));
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  padding: var(--sidebar-padding);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+  border-radius: 0 12px 12px 0;
+  transition: transform 0.3s ease, background 0.3s ease;
+  justify-content: flex-start;
+  gap: 28px;
+}
+
+/* Sidebar slide-in animation */
+.sidebar.open {
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ✅ Logo & Title */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+  height: 42px;
+  width: 42px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.sidebar-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: var(--accent-color);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
+  background-size: 400% 400%;
+  animation: animatedGradient 6s ease infinite;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  margin-bottom: 20px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@keyframes animatedGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--accent-color);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-welcome {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  color: white;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-color);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+/* ✅ Menu Navigation */
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.menu-item .icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.menu-item:hover {
+  background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
+  background-size: 400% 400%;
+  animation: animatedGradient 4s ease infinite;
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.active-link {
+  background: var(--accent-color);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 12px var(--active-glow);
+}
+
+/* ✅ Toggle Button (desktop hidden, mobile visible) */
+.toggle-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 12px;
+  font-size: 18px;
+  padding: 6px 10px;
+  background: var(--accent-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  z-index: 1101;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.05);
+}
+
+.toggle-btn.active {
+  background: var(--gradient-start);
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+
+  .sidebar-header {
+    padding-left: 44px; /* Move logo right ONLY on small screens */
+  }
+
+  .sidebar-logo {
+    height: 36px;
+    width: 36px;
+  }
+}

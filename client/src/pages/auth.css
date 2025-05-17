@@ -1,0 +1,87 @@
+.auth-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(-45deg, #1abc9c, #1f7aec, #1abc9c, #1f7aec);
+  background-size: 400% 400%;
+  animation: gradientMove 10s ease infinite;
+  padding: 20px;
+  transition: background 0.3s ease;
+  overflow: hidden;
+}
+
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ✅ Auth box animation (fade + zoom in) */
+.auth-container {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeZoom 1s ease forwards;
+  opacity: 0; /* Start hidden for animation */
+  transform: scale(0.95);
+}
+
+@keyframes fadeZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.auth-container h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #1a1a2e;
+  animation: slideFade 1s ease 0.3s forwards;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@keyframes slideFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-container button {
+  padding: 12px 20px;
+  background-color: #1a1a2e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+
+.auth-container button:hover {
+  background-color: #16213e;
+  transform: scale(1.03);
+}

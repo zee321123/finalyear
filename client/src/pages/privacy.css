@@ -1,0 +1,78 @@
+.privacy-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.8;
+  transition: all 0.3s ease-in-out;
+}
+
+.privacy-container h1 {
+  font-size: 2.5rem;
+  color: #000000;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.privacy-container h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  color: #2c3e50;
+}
+
+.privacy-container p {
+  margin-bottom: 1.2rem;
+  font-size: 1.05rem;
+}
+
+.privacy-container a {
+  color: #1abc9c;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.privacy-container a:hover {
+  text-decoration: underline;
+  color: #16a085;
+}
+
+/* ✅ Mobile responsiveness */
+@media (max-width: 768px) {
+  .privacy-container {
+    padding: 1.5rem;
+  }
+
+  .privacy-container h1 {
+    font-size: 2rem;
+  }
+
+  .privacy-container h2 {
+    font-size: 1.3rem;
+  }
+
+  .privacy-container p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .privacy-container {
+    padding: 1rem;
+  }
+
+  .privacy-container h1 {
+    font-size: 1.7rem;
+  }
+
+  .privacy-container h2 {
+    font-size: 1.1rem;
+  }
+
+  .privacy-container p {
+    font-size: 0.95rem;
+  }
+}
