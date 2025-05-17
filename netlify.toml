@@ -1,4 +1,0 @@
-[build]
-  base = "client"
-  publish = "dist"
-  command = "vite build"
