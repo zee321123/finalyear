@@ -10,7 +10,6 @@ const passport = require('passport');
 const cron = require('node-cron');
 const dayjs = require('dayjs');
 const path = require('path');
-
 const User = require('./models/user');
 const Otp = require('./models/otp');
 const sendOtp = require('./utils/sendOtp');
