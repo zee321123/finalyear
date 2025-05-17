@@ -260,11 +260,16 @@ app.use('/api/scheduled', authenticate, scheduledRoutes);
 // ✅ Health check
 app.get('/', (req, res) => res.send('✅ Backend is running!'));
 
-// ✅ MongoDB connection & server start
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/moneytrack', {
+if (!process.env.MONGO_URI) {
+  console.error('❌ MONGO_URI is not defined. Set it in your environment variables.');
+  process.exit(1);
+}
+
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
+
 .then(() => {
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
