@@ -10,12 +10,13 @@ const passport = require('passport');
 const cron = require('node-cron');
 const dayjs = require('dayjs');
 const path = require('path');
+
 const User = require('./models/user');
 const Otp = require('./models/otp');
 const sendOtp = require('./utils/sendOtp');
 const Transaction = require('./models/transaction');
 const ScheduledTransaction = require('./models/scheduledtransaction');
-const authenticate = require('./middleware/authenticate'); // ✅ Added correctly
+const authenticate = require('./middleware/authenticate');
 
 require('./passport');
 
@@ -26,8 +27,21 @@ const SECRET = process.env.JWT_SECRET || 'secretkey';
 // ✅ Webhook first
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
+// ✅ CORS setup (for localhost + Vercel frontend)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://your-vercel-project-name.vercel.app' // ⬅️ Replace with your actual deployed Vercel URL
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
+
 // ✅ Middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -39,8 +53,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ Your existing routes below (unchanged except now authenticate works)
-// Send OTP
+// ✅ Auth, OTP, and User Routes
 app.post('/auth/send-otp', async (req, res) => {
   const { email } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -57,7 +70,6 @@ app.post('/auth/send-otp', async (req, res) => {
   }
 });
 
-// ✅ Verify OTP (used for password reset etc.)
 app.post('/auth/verify-otp', async (req, res) => {
   const { email, code } = req.body;
   const record = await Otp.findOne({ email, code });
@@ -69,7 +81,7 @@ app.post('/auth/verify-otp', async (req, res) => {
   res.json({ message: 'OTP verified' });
 });
 
-// ✅ Register
+// ✅ Register/Login/2FA logic (unchanged)
 app.post('/auth/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -101,7 +113,6 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
-// ✅ Login with 2FA support
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -133,19 +144,12 @@ app.post('/auth/login', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, SECRET, { expiresIn: '1d' });
-    res.json({
-      message: 'Login successful',
-      token,
-      role: user.role,
-      isPremium: user.isPremium
-    });
-
+    res.json({ message: 'Login successful', token, role: user.role, isPremium: user.isPremium });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// ✅ Verify OTP for login
 app.post('/auth/verify-login-otp', async (req, res) => {
   try {
     const { userId, otp } = req.body;
@@ -160,23 +164,15 @@ app.post('/auth/verify-login-otp', async (req, res) => {
     await user.save();
 
     const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, SECRET, { expiresIn: '1d' });
-    res.json({
-      message: 'Login successful via OTP',
-      token,
-      role: user.role,
-      isPremium: user.isPremium
-    });
-
+    res.json({ message: 'Login successful via OTP', token, role: user.role, isPremium: user.isPremium });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// ✅ Toggle 2FA (with authenticate middleware)
 app.put('/auth/toggle-2fa', authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-
     if (!user.isPremium) {
       return res.status(403).json({ message: '2FA is only available for premium users.' });
     }
@@ -191,7 +187,7 @@ app.put('/auth/toggle-2fa', authenticate, async (req, res) => {
   }
 });
 
-// ✅ Manual password reset
+// ✅ Password reset routes (unchanged)
 app.post('/auth/reset-password', async (req, res) => {
   const { email, currentPassword, newPassword } = req.body;
 
@@ -212,7 +208,6 @@ app.post('/auth/reset-password', async (req, res) => {
   }
 });
 
-// ✅ OTP-based password reset
 app.post('/auth/otp-reset-password', async (req, res) => {
   const { email, newPassword } = req.body;
 
@@ -230,17 +225,18 @@ app.post('/auth/otp-reset-password', async (req, res) => {
   }
 });
 
-// ✅ Google OAuth
+// ✅ Google OAuth (dynamic frontend redirect)
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
     const token = jwt.sign({ id: req.user._id, email: req.user.email }, SECRET, { expiresIn: '1d' });
-    res.redirect(`http://localhost:5173/dashboard?token=${encodeURIComponent(token)}`);
+    const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard?token=${encodeURIComponent(token)}`;
+    res.redirect(redirectUrl);
   }
 );
 
-// ✅ Routes
+// ✅ API Routes
 app.use('/api/reports', require('./routes/reportroutes'));
 app.use('/api/transactions', require('./routes/transactionroutes'));
 app.use('/api/receipts', require('./routes/receiptsroutes'));
@@ -250,16 +246,16 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payment', require('./routes/payment'));
-
 let scheduledRoutes = require('./routes/scheduledroutes');
 if (scheduledRoutes && typeof scheduledRoutes.default === 'function') {
   scheduledRoutes = scheduledRoutes.default;
 }
 app.use('/api/scheduled', authenticate, scheduledRoutes);
 
-// ✅ Health check
+// ✅ Health Check
 app.get('/', (req, res) => res.send('✅ Backend is running!'));
 
+// ✅ Connect MongoDB
 if (!process.env.MONGO_URI) {
   console.error('❌ MONGO_URI is not defined. Set it in your environment variables.');
   process.exit(1);
@@ -268,9 +264,7 @@ if (!process.env.MONGO_URI) {
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-})
-
-.then(() => {
+}).then(() => {
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
     const due = await ScheduledTransaction.find({ nextRun: { $lte: now.toDate() } });
@@ -294,5 +288,4 @@ mongoose.connect(process.env.MONGO_URI, {
   });
 
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-})
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+}).catch((err) => console.error('❌ MongoDB connection error:', err));
