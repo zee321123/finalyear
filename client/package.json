@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@stripe/stripe-js": "^7.3.0",
     "axios": "^1.8.4",
     "chart.js": "^4.4.9",
     "file-saver": "^2.0.5",
