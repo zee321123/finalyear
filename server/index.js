@@ -30,7 +30,7 @@ app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 // ✅ CORS setup (for localhost + Vercel frontend)
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://your-vercel-project-name.vercel.app' // ⬅️ Replace with your actual deployed Vercel URL
+  'https://moneyapp01.netlify.app/' // ⬅️ Replace with your actual deployed Vercel URL
 ];
 
 app.use(cors({
