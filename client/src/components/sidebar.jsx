@@ -10,7 +10,7 @@ import {
   FaCog,
 } from "react-icons/fa";
 import { UserContext } from "../context/usercontext";
-import "./Sidebar.css";
+import "./sidebar.css";
 const API = import.meta.env.VITE_API_URL;
 
 

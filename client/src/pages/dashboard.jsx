@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef, useCallback } from 'react';
-import './Dashboard.css';
+import './dashboard.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import {
