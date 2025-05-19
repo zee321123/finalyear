@@ -4,7 +4,8 @@ import { UserContext } from '../context/usercontext';
 import './settings.css';
 import { FaSave, FaSignOutAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -25,13 +26,14 @@ export default function Settings() {
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const start = Date.now();
-    const token = localStorage.getItem('token');
+ useEffect(() => {
+  console.log("✅ API_URL used:", API_URL); // 🔍 Add this
+  const start = Date.now();
+  const token = localStorage.getItem('token');
 
-    fetch(`${API_URL}/api/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  fetch(`${API_URL}/api/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
       .then(res => res.json())
       .then(data => {
         setProfile({
