@@ -16,8 +16,8 @@ router.post('/create-checkout-session', authenticate, async (req, res) => {
         },
       ],
       customer_email: req.user.email,
-      success_url: 'http://localhost:5173/dashboard?paid=true',
-      cancel_url: 'http://localhost:5173/upgrade',
+      success_url: `${process.env.FRONTEND_URL}/dashboard?paid=true`,
+      cancel_url: `${process.env.FRONTEND_URL}/dashboard?cancelled=true`,
       metadata: {
         userId: req.user.id,
       },
