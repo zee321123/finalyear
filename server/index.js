@@ -27,19 +27,29 @@ const SECRET = process.env.JWT_SECRET || 'secretkey';
 // ✅ Webhook first
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
-// ✅ CORS setup (for localhost + Vercel frontend)
 const allowedOrigins = [
   'http://localhost:5173',
   'https://moneyapp01.netlify.app'
 ];
 
+// Updated CORS with better logging and flexibility
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin) {
+      // Allow requests with no origin (like mobile apps, curl, etc.)
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.warn(`❌ Blocked by CORS: ${origin}`);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
+
 
 // ✅ Middleware
 app.use(express.json());
