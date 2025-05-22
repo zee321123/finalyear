@@ -65,15 +65,15 @@ app.post('/api/payment/webhook', async (req, res) => {
   res.status(200).json({ received: true });
 });
 
-// ✅ CORS Setup
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://moneyapp01.netlify.app'
+  'https://moneyapp01.netlify.app',
+  ...process.env.ALLOW_ALL_NETLIFY === 'true' ? ['*'] : []
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
       return callback(null, true);
     }
     console.warn(`❌ CORS blocked: ${origin}`);
@@ -81,6 +81,27 @@ app.use(cors({
   },
   credentials: true
 }));
+
+app.post('/auth/send-otp', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const result = await sendOtp(email);
+    if (result.success) {
+      return res.status(200).json({ message: 'OTP sent successfully' });
+    } else {
+      return res.status(500).json({ message: result.message || 'Failed to send OTP' });
+    }
+  } catch (err) {
+    console.error('❌ sendOtp failed:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // ✅ Middleware
 app.use(express.json());
@@ -109,6 +130,7 @@ app.get('/auth/google/callback',
 );
 
 // ✅ API Routes
+app.use('/auth', require('./routes/forgotRoutes'));
 app.use('/api/reports', require('./routes/reportroutes'));
 app.use('/api/transactions', require('./routes/transactionroutes'));
 app.use('/api/receipts', require('./routes/receiptsroutes'));
