@@ -130,7 +130,6 @@ app.get('/auth/google/callback',
 );
 
 // ✅ API Routes
-app.use('/auth', require('./routes/forgotRoutes'));
 app.use('/api/reports', require('./routes/reportroutes'));
 app.use('/api/transactions', require('./routes/transactionroutes'));
 app.use('/api/receipts', require('./routes/receiptsroutes'));
