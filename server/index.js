@@ -82,6 +82,22 @@ app.use(cors({
   credentials: true
 }));
 
+
+
+
+// ✅ Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'sessionSecret123',
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 app.post('/auth/send-otp', async (req, res) => {
   const { email } = req.body;
 
@@ -101,22 +117,6 @@ app.post('/auth/send-otp', async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
-// ✅ Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'sessionSecret123',
-  resave: false,
-  saveUninitialized: true
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// ✅ Auth, OTP, Register/Login, 2FA, Reset Password (same as before)
-// 🟢 ... Your existing auth routes (no change needed)
 
 // ✅ Google OAuth
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
