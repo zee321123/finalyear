@@ -161,5 +161,23 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // ✅ Send OTP Route
+app.post('/auth/send-otp', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const result = await sendOtp(email);
+    res.status(200).json({ message: 'OTP sent successfully', result });
+  } catch (err) {
+    console.error('Error sending OTP:', err);
+    res.status(500).json({ message: 'Failed to send OTP' });
+  }
+});
+
+
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 }).catch((err) => console.error('❌ MongoDB connection error:', err));
