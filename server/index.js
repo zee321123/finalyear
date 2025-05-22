@@ -71,9 +71,14 @@ const allowedOrigins = [
   'https://moneyapp01.netlify.app'
 ];
 
+// ✅ Dynamically allow Netlify deploy previews
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.netlify.app') // Allow all Netlify preview URLs
+    ) {
       return callback(null, true);
     }
     console.warn(`❌ CORS blocked: ${origin}`);
