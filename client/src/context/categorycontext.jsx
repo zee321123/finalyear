@@ -46,3 +46,4 @@ export function CategoryProvider({ children }) {
     </CategoryContext.Provider>
   );
 }
+1
