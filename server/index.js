@@ -44,7 +44,6 @@ app.post('/api/payment/webhook', async (req, res) => {
     const userId = session.metadata?.userId;
 
     if (!userId) {
-      console.warn('⚠️ No userId in metadata');
       return res.status(400).send('Missing user ID');
     }
 
@@ -75,7 +74,6 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
       return callback(null, true);
     }
-    console.warn(`❌ CORS blocked: ${origin}`);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
@@ -124,7 +122,7 @@ app.use('/api/scheduled', authenticate, scheduledRoutes);
 // ✅ Health Check
 app.get('/', (req, res) => res.send('✅ Backend is running!'));
 
-// ✅ MongoDB Connection + Scheduled Job
+// ✅ MongoDB Connection + Cron Job
 if (!process.env.MONGO_URI) {
   console.error('❌ MONGO_URI is not defined.');
   process.exit(1);
@@ -134,7 +132,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
-  // ✅ Cron Job
+  // ✅ Scheduled Transactions Cron
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
     const due = await ScheduledTransaction.find({ nextRun: { $lte: now.toDate() } });
@@ -158,16 +156,14 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Send OTP Route
+  // ✅ Send OTP
   app.post('/auth/send-otp', async (req, res) => {
     const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ message: 'Email is required' });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     try {
       await Otp.create({ email, code: otp, expiresAt });
@@ -179,7 +175,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Verify OTP Route
+  // ✅ Verify OTP (sets verified: true)
   app.post('/auth/verify-otp', async (req, res) => {
     const { email, code } = req.body;
 
@@ -198,7 +194,9 @@ mongoose.connect(process.env.MONGO_URI, {
         return res.status(400).json({ message: 'OTP has expired' });
       }
 
-      await Otp.deleteOne({ _id: otpRecord._id });
+      otpRecord.verified = true;
+      await otpRecord.save();
+
       res.status(200).json({ message: '✅ OTP verified successfully' });
     } catch (err) {
       console.error('Error verifying OTP:', err);
@@ -206,7 +204,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Register Route (No fullName required)
+  // ✅ Register (requires verified OTP)
   app.post('/auth/register', async (req, res) => {
     const { email, password } = req.body;
 
@@ -215,8 +213,9 @@ mongoose.connect(process.env.MONGO_URI, {
     }
 
     try {
-      const pendingOtp = await Otp.findOne({ email });
-      if (pendingOtp) {
+      const otpRecord = await Otp.findOne({ email }).sort({ createdAt: -1 });
+
+      if (!otpRecord || !otpRecord.verified) {
         return res.status(400).json({ message: 'Please verify OTP before registering' });
       }
 
@@ -231,6 +230,8 @@ mongoose.connect(process.env.MONGO_URI, {
         email,
         password: hashedPassword
       });
+
+      await Otp.deleteMany({ email }); // ✅ clean up verified OTPs
 
       const token = jwt.sign({ id: newUser._id, email: newUser.email }, SECRET, { expiresIn: '1d' });
 
