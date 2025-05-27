@@ -24,10 +24,8 @@ const PORT = process.env.PORT || 5000;
 const SECRET = process.env.JWT_SECRET || 'secretkey';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// ✅ Webhook raw body parser
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
-// ✅ Stripe Webhook Route
 app.post('/api/payment/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
@@ -43,9 +41,7 @@ app.post('/api/payment/webhook', async (req, res) => {
     const session = event.data.object;
     const userId = session.metadata?.userId;
 
-    if (!userId) {
-      return res.status(400).send('Missing user ID');
-    }
+    if (!userId) return res.status(400).send('Missing user ID');
 
     try {
       const user = await User.findById(userId);
@@ -63,11 +59,7 @@ app.post('/api/payment/webhook', async (req, res) => {
   res.status(200).json({ received: true });
 });
 
-// ✅ CORS Setup
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://moneyapp01.netlify.app'
-];
+const allowedOrigins = ['http://localhost:5173', 'https://moneyapp01.netlify.app'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -79,7 +71,6 @@ app.use(cors({
   credentials: true
 }));
 
-// ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -91,7 +82,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ Google OAuth
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
@@ -102,7 +92,6 @@ app.get('/auth/google/callback',
   }
 );
 
-// ✅ API Routes
 app.use('/api/reports', require('./routes/reportroutes'));
 app.use('/api/transactions', require('./routes/transactionroutes'));
 app.use('/api/receipts', require('./routes/receiptsroutes'));
@@ -114,15 +103,11 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payment', require('./routes/payment'));
 
 let scheduledRoutes = require('./routes/scheduledroutes');
-if (scheduledRoutes && typeof scheduledRoutes.default === 'function') {
-  scheduledRoutes = scheduledRoutes.default;
-}
+if (scheduledRoutes && typeof scheduledRoutes.default === 'function') scheduledRoutes = scheduledRoutes.default;
 app.use('/api/scheduled', authenticate, scheduledRoutes);
 
-// ✅ Health Check
 app.get('/', (req, res) => res.send('✅ Backend is running!'));
 
-// ✅ MongoDB Connection + Cron Job
 if (!process.env.MONGO_URI) {
   console.error('❌ MONGO_URI is not defined.');
   process.exit(1);
@@ -132,7 +117,6 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
-  // ✅ Scheduled Transactions Cron
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
     const due = await ScheduledTransaction.find({ nextRun: { $lte: now.toDate() } });
@@ -148,18 +132,17 @@ mongoose.connect(process.env.MONGO_URI, {
       });
 
       let next = dayjs(rule.nextRun);
-      if (rule.frequency === 'monthly') next = next.add(1, 'month').date(rule.dayOfMonth);
-      else next = next.add(1, 'year').month(rule.month - 1).date(rule.dayOfMonth);
+      next = rule.frequency === 'monthly'
+        ? next.add(1, 'month').date(rule.dayOfMonth)
+        : next.add(1, 'year').month(rule.month - 1).date(rule.dayOfMonth);
 
       rule.nextRun = next.toDate();
       await rule.save();
     }
   });
 
-  // ✅ Send OTP
   app.post('/auth/send-otp', async (req, res) => {
     const { email } = req.body;
-
     if (!email) return res.status(400).json({ message: 'Email is required' });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -175,28 +158,17 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Verify OTP (sets verified: true)
   app.post('/auth/verify-otp', async (req, res) => {
     const { email, code } = req.body;
-
-    if (!email || !code) {
-      return res.status(400).json({ message: 'Email and OTP code are required' });
-    }
+    if (!email || !code) return res.status(400).json({ message: 'Email and OTP code are required' });
 
     try {
       const otpRecord = await Otp.findOne({ email, code });
-
-      if (!otpRecord) {
-        return res.status(400).json({ message: 'Invalid OTP' });
-      }
-
-      if (otpRecord.expiresAt < new Date()) {
-        return res.status(400).json({ message: 'OTP has expired' });
-      }
+      if (!otpRecord) return res.status(400).json({ message: 'Invalid OTP' });
+      if (otpRecord.expiresAt < new Date()) return res.status(400).json({ message: 'OTP has expired' });
 
       otpRecord.verified = true;
       await otpRecord.save();
-
       res.status(200).json({ message: '✅ OTP verified successfully' });
     } catch (err) {
       console.error('Error verifying OTP:', err);
@@ -204,41 +176,46 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Register (requires verified OTP)
   app.post('/auth/register', async (req, res) => {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
-    }
+    if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
 
     try {
       const otpRecord = await Otp.findOne({ email }).sort({ createdAt: -1 });
-
-      if (!otpRecord || !otpRecord.verified) {
-        return res.status(400).json({ message: 'Please verify OTP before registering' });
-      }
+      if (!otpRecord || !otpRecord.verified) return res.status(400).json({ message: 'Please verify OTP before registering' });
 
       const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(409).json({ message: 'Email is already registered' });
-      }
+      if (existingUser) return res.status(409).json({ message: 'Email is already registered' });
 
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      const newUser = await User.create({
-        email,
-        password: hashedPassword
-      });
-
-      await Otp.deleteMany({ email }); // ✅ clean up verified OTPs
+      const newUser = await User.create({ email, password: hashedPassword });
+      await Otp.deleteMany({ email });
 
       const token = jwt.sign({ id: newUser._id, email: newUser.email }, SECRET, { expiresIn: '1d' });
-
       res.status(201).json({ message: 'User registered successfully', token });
     } catch (err) {
       console.error('Error during registration:', err);
       res.status(500).json({ message: 'Server error during registration' });
+    }
+  });
+
+  // ✅ Login Route
+  app.post('/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
+
+    try {
+      const user = await User.findOne({ email });
+      if (!user) return res.status(401).json({ message: 'Invalid email or password' });
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
+
+      const token = jwt.sign({ id: user._id, email: user.email }, SECRET, { expiresIn: '1d' });
+      res.status(200).json({ message: 'Login successful', token });
+    } catch (err) {
+      console.error('Login error:', err);
+      res.status(500).json({ message: 'Server error during login' });
     }
   });
 
