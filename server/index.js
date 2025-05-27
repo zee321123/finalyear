@@ -242,24 +242,40 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Toggle 2FA (requires authentication)
-app.put('/auth/toggle-2fa', authenticate, async (req, res) => {
+app.post('/auth/verify-login-otp', async (req, res) => {
+  const { userId, otp } = req.body;
+  if (!userId || !otp) return res.status(400).json({ message: 'User ID and OTP are required' });
+
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    user.twoFactorEnabled = !user.twoFactorEnabled;
-    await user.save();
+    const otpRecord = await Otp.findOne({ email: user.email, code: otp });
+    if (!otpRecord) return res.status(400).json({ message: 'Invalid OTP' });
+    if (otpRecord.expiresAt < new Date()) return res.status(400).json({ message: 'OTP has expired' });
 
-    res.status(200).json({
-      message: user.twoFactorEnabled ? '2FA enabled' : '2FA disabled',
-      twoFactorEnabled: user.twoFactorEnabled
-    });
+    // Optional cleanup
+    await Otp.deleteMany({ email: user.email });
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        isPremium: user.isPremium
+      },
+      SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.status(200).json({ message: 'OTP verified. Login successful', token });
   } catch (err) {
-    console.error('❌ Toggle 2FA error:', err);
-    res.status(500).json({ message: 'Server error toggling 2FA' });
+    console.error('OTP verification error:', err);
+    res.status(500).json({ message: 'Server error verifying OTP' });
   }
 });
+
+
 
 
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
