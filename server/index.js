@@ -199,7 +199,6 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Login Route
   app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
@@ -216,6 +215,30 @@ mongoose.connect(process.env.MONGO_URI, {
     } catch (err) {
       console.error('Login error:', err);
       res.status(500).json({ message: 'Server error during login' });
+    }
+  });
+
+  app.post('/auth/otp-reset-password', async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword) return res.status(400).json({ message: 'All fields are required' });
+
+    try {
+      const otpRecord = await Otp.findOne({ email, code });
+      if (!otpRecord) return res.status(400).json({ message: 'Invalid OTP' });
+      if (otpRecord.expiresAt < new Date()) return res.status(400).json({ message: 'OTP has expired' });
+
+      const user = await User.findOne({ email });
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      await Otp.deleteMany({ email });
+      res.status(200).json({ message: '✅ Password reset successful' });
+    } catch (err) {
+      console.error('Password reset error:', err);
+      res.status(500).json({ message: 'Server error during password reset' });
     }
   });
 
