@@ -1,4 +1,3 @@
-// ✅ All your existing imports
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -207,16 +206,15 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Register Route
+  // ✅ Register Route (No fullName required)
   app.post('/auth/register', async (req, res) => {
-    const { fullName, email, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
     try {
-      // ❗ Optional: only allow registration if OTP was verified (record is deleted)
       const pendingOtp = await Otp.findOne({ email });
       if (pendingOtp) {
         return res.status(400).json({ message: 'Please verify OTP before registering' });
@@ -230,7 +228,6 @@ mongoose.connect(process.env.MONGO_URI, {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const newUser = await User.create({
-        fullName,
         email,
         password: hashedPassword
       });
