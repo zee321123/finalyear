@@ -1,4 +1,3 @@
-// ✅ All your existing imports
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -71,13 +70,12 @@ const allowedOrigins = [
   'https://moneyapp01.netlify.app'
 ];
 
-// ✅ Dynamically allow Netlify deploy previews
 app.use(cors({
   origin: function (origin, callback) {
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.netlify.app') // Allow all Netlify preview URLs
+      origin.endsWith('.netlify.app')
     ) {
       return callback(null, true);
     }
@@ -98,9 +96,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// ✅ Auth, OTP, Register/Login, 2FA, Reset Password (same as before)
-// 🟢 ... Your existing auth routes (no change needed)
 
 // ✅ Google OAuth
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -123,6 +118,7 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payment', require('./routes/payment'));
+
 let scheduledRoutes = require('./routes/scheduledroutes');
 if (scheduledRoutes && typeof scheduledRoutes.default === 'function') {
   scheduledRoutes = scheduledRoutes.default;
@@ -166,23 +162,31 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Send OTP Route
-app.post('/auth/send-otp', async (req, res) => {
-  const { email } = req.body;
+  // ✅ Send OTP Route (Fixed)
+  app.post('/auth/send-otp', async (req, res) => {
+    const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
 
-  try {
-    const result = await sendOtp(email);
-    res.status(200).json({ message: 'OTP sent successfully', result });
-  } catch (err) {
-    console.error('Error sending OTP:', err);
-    res.status(500).json({ message: 'Failed to send OTP' });
-  }
-});
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    try {
+      await Otp.create({
+        email,
+        otp,
+        createdAt: new Date()
+      });
+
+      await sendOtp(email, otp);
+
+      res.status(200).json({ message: 'OTP sent successfully' });
+    } catch (err) {
+      console.error('Error sending OTP:', err);
+      res.status(500).json({ message: 'Failed to send OTP' });
+    }
+  });
 
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 }).catch((err) => console.error('❌ MongoDB connection error:', err));
