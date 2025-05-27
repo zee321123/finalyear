@@ -210,7 +210,7 @@ mongoose.connect(process.env.MONGO_URI, {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
 
-      const token = jwt.sign({ id: user._id, email: user.email }, SECRET, { expiresIn: '1d' });
+      const token = jwt.sign({ id: user._id, email: user.email, role: user.role, isPremium: user.isPremium }, SECRET, { expiresIn: '1d' });
       res.status(200).json({ message: 'Login successful', token });
     } catch (err) {
       console.error('Login error:', err);
@@ -239,6 +239,25 @@ mongoose.connect(process.env.MONGO_URI, {
     } catch (err) {
       console.error('Password reset error:', err);
       res.status(500).json({ message: 'Server error during password reset' });
+    }
+  });
+
+  // ✅ Toggle 2FA
+  app.post('/auth/toggle-2fa', authenticate, async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      user.twoFactorEnabled = !user.twoFactorEnabled;
+      await user.save();
+
+      res.status(200).json({
+        message: `2FA ${user.twoFactorEnabled ? 'enabled' : 'disabled'}`,
+        twoFactorEnabled: user.twoFactorEnabled
+      });
+    } catch (err) {
+      console.error('❌ Toggle 2FA error:', err);
+      res.status(500).json({ message: 'Server error toggling 2FA' });
     }
   });
 
