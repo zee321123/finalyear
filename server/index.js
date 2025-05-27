@@ -24,8 +24,8 @@ const PORT = process.env.PORT || 5000;
 const SECRET = process.env.JWT_SECRET || 'secretkey';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// Stripe Webhook
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
-
 app.post('/api/payment/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
@@ -59,8 +59,8 @@ app.post('/api/payment/webhook', async (req, res) => {
   res.status(200).json({ received: true });
 });
 
+// CORS
 const allowedOrigins = ['http://localhost:5173', 'https://moneyapp01.netlify.app'];
-
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
@@ -82,6 +82,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Google Auth
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
@@ -92,6 +93,7 @@ app.get('/auth/google/callback',
   }
 );
 
+// Routes
 app.use('/api/reports', require('./routes/reportroutes'));
 app.use('/api/transactions', require('./routes/transactionroutes'));
 app.use('/api/receipts', require('./routes/receiptsroutes'));
@@ -108,6 +110,7 @@ app.use('/api/scheduled', authenticate, scheduledRoutes);
 
 app.get('/', (req, res) => res.send('✅ Backend is running!'));
 
+// MongoDB Connection
 if (!process.env.MONGO_URI) {
   console.error('❌ MONGO_URI is not defined.');
   process.exit(1);
@@ -117,6 +120,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
+
+  // Cron Job
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
     const due = await ScheduledTransaction.find({ nextRun: { $lte: now.toDate() } });
@@ -141,6 +146,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Auth Routes
   app.post('/auth/send-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email is required' });
@@ -210,6 +216,20 @@ mongoose.connect(process.env.MONGO_URI, {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
 
+      if (user.twoFactorEnabled) {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+        await Otp.create({ email: user.email, code: otp, expiresAt });
+        await sendOtp(user.email, otp);
+
+        return res.status(200).json({
+          requiresOtp: true,
+          userId: user._id,
+          message: '2FA enabled. OTP sent to email.'
+        });
+      }
+
       const token = jwt.sign({ id: user._id, email: user.email, role: user.role, isPremium: user.isPremium }, SECRET, { expiresIn: '1d' });
       res.status(200).json({ message: 'Login successful', token });
     } catch (err) {
@@ -218,65 +238,56 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  app.post('/auth/otp-reset-password', async (req, res) => {
-    const { email, code, newPassword } = req.body;
-    if (!email || !code || !newPassword) return res.status(400).json({ message: 'All fields are required' });
+  app.post('/auth/verify-login-otp', async (req, res) => {
+    const { userId, otp } = req.body;
+    if (!userId || !otp) return res.status(400).json({ message: 'User ID and OTP are required' });
 
     try {
-      const otpRecord = await Otp.findOne({ email, code });
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      const otpRecord = await Otp.findOne({ email: user.email, code: otp });
       if (!otpRecord) return res.status(400).json({ message: 'Invalid OTP' });
       if (otpRecord.expiresAt < new Date()) return res.status(400).json({ message: 'OTP has expired' });
 
-      const user = await User.findOne({ email });
-      if (!user) return res.status(404).json({ message: 'User not found' });
+      await Otp.deleteMany({ email: user.email });
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
-      await user.save();
+      const token = jwt.sign(
+        {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+          isPremium: user.isPremium
+        },
+        SECRET,
+        { expiresIn: '1d' }
+      );
 
-      await Otp.deleteMany({ email });
-      res.status(200).json({ message: '✅ Password reset successful' });
+      res.status(200).json({ message: 'OTP verified. Login successful', token });
     } catch (err) {
-      console.error('Password reset error:', err);
-      res.status(500).json({ message: 'Server error during password reset' });
+      console.error('OTP verification error:', err);
+      res.status(500).json({ message: 'Server error verifying OTP' });
     }
   });
 
-app.post('/auth/verify-login-otp', async (req, res) => {
-  const { userId, otp } = req.body;
-  if (!userId || !otp) return res.status(400).json({ message: 'User ID and OTP are required' });
+  // ✅ NEW: Toggle 2FA route
+  app.put('/auth/toggle-2fa', authenticate, async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id);
+      if (!user) return res.status(404).json({ message: 'User not found' });
 
-  try {
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+      user.twoFactorEnabled = !user.twoFactorEnabled;
+      await user.save();
 
-    const otpRecord = await Otp.findOne({ email: user.email, code: otp });
-    if (!otpRecord) return res.status(400).json({ message: 'Invalid OTP' });
-    if (otpRecord.expiresAt < new Date()) return res.status(400).json({ message: 'OTP has expired' });
-
-    // Optional cleanup
-    await Otp.deleteMany({ email: user.email });
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        role: user.role,
-        isPremium: user.isPremium
-      },
-      SECRET,
-      { expiresIn: '1d' }
-    );
-
-    res.status(200).json({ message: 'OTP verified. Login successful', token });
-  } catch (err) {
-    console.error('OTP verification error:', err);
-    res.status(500).json({ message: 'Server error verifying OTP' });
-  }
-});
-
-
-
+      res.status(200).json({
+        message: user.twoFactorEnabled ? '2FA enabled' : '2FA disabled',
+        twoFactorEnabled: user.twoFactorEnabled
+      });
+    } catch (err) {
+      console.error('❌ Toggle 2FA error:', err);
+      res.status(500).json({ message: 'Server error toggling 2FA' });
+    }
+  });
 
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 }).catch((err) => console.error('❌ MongoDB connection error:', err));
