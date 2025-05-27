@@ -242,24 +242,25 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Toggle 2FA
-  app.post('/auth/toggle-2fa', authenticate, async (req, res) => {
-    try {
-      const user = await User.findById(req.user._id);
-      if (!user) return res.status(404).json({ message: 'User not found' });
+  // ✅ Toggle 2FA (requires authentication)
+app.put('/auth/toggle-2fa', authenticate, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-      user.twoFactorEnabled = !user.twoFactorEnabled;
-      await user.save();
+    user.twoFactorEnabled = !user.twoFactorEnabled;
+    await user.save();
 
-      res.status(200).json({
-        message: `2FA ${user.twoFactorEnabled ? 'enabled' : 'disabled'}`,
-        twoFactorEnabled: user.twoFactorEnabled
-      });
-    } catch (err) {
-      console.error('❌ Toggle 2FA error:', err);
-      res.status(500).json({ message: 'Server error toggling 2FA' });
-    }
-  });
+    res.status(200).json({
+      message: user.twoFactorEnabled ? '2FA enabled' : '2FA disabled',
+      twoFactorEnabled: user.twoFactorEnabled
+    });
+  } catch (err) {
+    console.error('❌ Toggle 2FA error:', err);
+    res.status(500).json({ message: 'Server error toggling 2FA' });
+  }
+});
+
 
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 }).catch((err) => console.error('❌ MongoDB connection error:', err));
