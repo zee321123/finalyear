@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 5000;
 const SECRET = process.env.JWT_SECRET || 'secretkey';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// ✅ Webhook raw body parser (MUST be before express.json)
+// ✅ Webhook raw body parser
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 
 // ✅ Stripe Webhook Route
@@ -73,11 +73,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (
-      !origin ||
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.netlify.app')
-    ) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.netlify.app')) {
       return callback(null, true);
     }
     console.warn(`❌ CORS blocked: ${origin}`);
@@ -119,6 +115,7 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payment', require('./routes/payment'));
+
 let scheduledRoutes = require('./routes/scheduledroutes');
 if (scheduledRoutes && typeof scheduledRoutes.default === 'function') {
   scheduledRoutes = scheduledRoutes.default;
@@ -138,7 +135,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => {
-  // ✅ Cron: Run scheduled transactions
+  // ✅ Cron Job
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
     const due = await ScheduledTransaction.find({ nextRun: { $lte: now.toDate() } });
@@ -171,17 +168,11 @@ mongoose.connect(process.env.MONGO_URI, {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
 
     try {
-      await Otp.create({
-        email,
-        code: otp,
-        expiresAt
-      });
-
+      await Otp.create({ email, code: otp, expiresAt });
       await sendOtp(email, otp);
-
       res.status(200).json({ message: 'OTP sent successfully' });
     } catch (err) {
       console.error('Error sending OTP:', err);
@@ -208,13 +199,48 @@ mongoose.connect(process.env.MONGO_URI, {
         return res.status(400).json({ message: 'OTP has expired' });
       }
 
-      // ✅ Optional: delete used OTP
       await Otp.deleteOne({ _id: otpRecord._id });
-
       res.status(200).json({ message: '✅ OTP verified successfully' });
     } catch (err) {
       console.error('Error verifying OTP:', err);
       res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  // ✅ Register Route
+  app.post('/auth/register', async (req, res) => {
+    const { fullName, email, password } = req.body;
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    try {
+      // ❗ Optional: only allow registration if OTP was verified (record is deleted)
+      const pendingOtp = await Otp.findOne({ email });
+      if (pendingOtp) {
+        return res.status(400).json({ message: 'Please verify OTP before registering' });
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ message: 'Email is already registered' });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = await User.create({
+        fullName,
+        email,
+        password: hashedPassword
+      });
+
+      const token = jwt.sign({ id: newUser._id, email: newUser.email }, SECRET, { expiresIn: '1d' });
+
+      res.status(201).json({ message: 'User registered successfully', token });
+    } catch (err) {
+      console.error('Error during registration:', err);
+      res.status(500).json({ message: 'Server error during registration' });
     }
   });
 
