@@ -71,7 +71,6 @@ const allowedOrigins = [
   'https://moneyapp01.netlify.app'
 ];
 
-// ✅ Dynamically allow Netlify deploy previews
 app.use(cors({
   origin: function (origin, callback) {
     if (
@@ -163,7 +162,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Send OTP Route (Fixed to match your Otp schema)
+  // ✅ Send OTP Route
   app.post('/auth/send-otp', async (req, res) => {
     const { email } = req.body;
 
@@ -187,6 +186,35 @@ mongoose.connect(process.env.MONGO_URI, {
     } catch (err) {
       console.error('Error sending OTP:', err);
       res.status(500).json({ message: 'Failed to send OTP' });
+    }
+  });
+
+  // ✅ Verify OTP Route
+  app.post('/auth/verify-otp', async (req, res) => {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ message: 'Email and OTP code are required' });
+    }
+
+    try {
+      const otpRecord = await Otp.findOne({ email, code });
+
+      if (!otpRecord) {
+        return res.status(400).json({ message: 'Invalid OTP' });
+      }
+
+      if (otpRecord.expiresAt < new Date()) {
+        return res.status(400).json({ message: 'OTP has expired' });
+      }
+
+      // ✅ Optional: delete used OTP
+      await Otp.deleteOne({ _id: otpRecord._id });
+
+      res.status(200).json({ message: '✅ OTP verified successfully' });
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+      res.status(500).json({ message: 'Internal server error' });
     }
   });
 
