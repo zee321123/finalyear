@@ -1,3 +1,4 @@
+// ✅ All your existing imports
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -70,6 +71,7 @@ const allowedOrigins = [
   'https://moneyapp01.netlify.app'
 ];
 
+// ✅ Dynamically allow Netlify deploy previews
 app.use(cors({
   origin: function (origin, callback) {
     if (
@@ -118,7 +120,6 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payment', require('./routes/payment'));
-
 let scheduledRoutes = require('./routes/scheduledroutes');
 if (scheduledRoutes && typeof scheduledRoutes.default === 'function') {
   scheduledRoutes = scheduledRoutes.default;
@@ -162,7 +163,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // ✅ Send OTP Route (Fixed)
+  // ✅ Send OTP Route (Fixed to match your Otp schema)
   app.post('/auth/send-otp', async (req, res) => {
     const { email } = req.body;
 
@@ -171,12 +172,13 @@ mongoose.connect(process.env.MONGO_URI, {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     try {
       await Otp.create({
         email,
-        otp,
-        createdAt: new Date()
+        code: otp,
+        expiresAt
       });
 
       await sendOtp(email, otp);
