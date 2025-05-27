@@ -143,44 +143,49 @@ const LoginForm = () => {
     }
   };
 
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
+ const handleResetPassword = async (e) => {
+  e.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      return showToast('error', 'Passwords do not match');
+  if (newPassword !== confirmPassword) {
+    return showToast('error', 'Passwords do not match');
+  }
+
+  if (newPassword.length < 6) {
+    return showToast('error', 'Password must be at least 6 characters');
+  }
+
+  if (!isOtpVerified) {
+    return showToast('error', 'Verify OTP first');
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/otp-reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        code: otp, // ✅ send OTP
+        newPassword
+      }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast('success', 'Password updated successfully!');
+      setForgotMode(false);
+      setIsOtpSent(false);
+      setIsOtpVerified(false);
+      setNewPassword('');
+      setConfirmPassword('');
+      setOtp('');
+    } else {
+      showToast('error', data.message || 'Reset failed');
     }
+  } catch {
+    showToast('error', 'Server error. Try again later.');
+  }
+};
 
-    if (newPassword.length < 6) {
-      return showToast('error', 'Password must be at least 6 characters');
-    }
-
-    if (!isOtpVerified) {
-      return showToast('error', 'Verify OTP first');
-    }
-
-    try {
-      const res = await fetch(`${API_URL}/auth/otp-reset-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        showToast('success', 'Password updated successfully!');
-        setForgotMode(false);
-        setIsOtpSent(false);
-        setIsOtpVerified(false);
-        setNewPassword('');
-        setConfirmPassword('');
-        setOtp('');
-      } else {
-        showToast('error', data.message || 'Reset failed');
-      }
-    } catch {
-      showToast('error', 'Server error. Try again later.');
-    }
-  };
 
   const handleGoogleLogin = () => {
     window.location.href = `${API_URL}/auth/google`;
