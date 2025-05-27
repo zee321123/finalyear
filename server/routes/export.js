@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const ExportLog = require('../models/exportlog');
 const Transaction = require('../models/transaction');
+const Category = require('../models/category'); // ✅ Added for category lookup
 const authenticate = require('../middleware/authenticate');
 const { generateCSV, generatePDF } = require('../utils/exportGenerator');
 
@@ -17,17 +18,13 @@ function isFreeUser(user) {
 router.post('/check', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
-    console.log('🧠 [CHECK] User:', userId.toString(), '| Role:', req.user.role, '| Premium:', req.user.isPremium);
 
     if (!isFreeUser(req.user)) {
-      return res.json({ allowed: true }); // ✅ Unlimited access
+      return res.json({ allowed: true });
     }
 
     const count = await ExportLog.countDocuments({ userId });
-    console.log('📊 [CHECK] Export count:', count);
-
     if (count >= FREE_LIMIT) {
-      console.log('🚫 [CHECK] Export limit reached');
       return res.status(403).json({ allowed: false });
     }
 
@@ -42,23 +39,29 @@ router.post('/check', authenticate, async (req, res) => {
 router.post('/csv', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
-    console.log('📝 [CSV EXPORT] User:', userId.toString());
 
     if (isFreeUser(req.user)) {
       const count = await ExportLog.countDocuments({ userId });
-      console.log('📊 [CSV] Export count:', count);
       if (count >= FREE_LIMIT) {
-        console.log('🚫 [CSV] Limit reached');
         return res.status(403).json({ message: 'CSV export limit reached' });
       }
     }
 
-    const transactions = await Transaction.find({ userId });
-    console.log('✅ [CSV] Transactions:', transactions.length);
+    let transactions = await Transaction.find({ userId });
+
+    // 🔁 Convert category IDs to names (if needed)
+    transactions = await Promise.all(
+      transactions.map(async (txn) => {
+        if (/^[0-9a-fA-F]{24}$/.test(txn.category)) {
+          const cat = await Category.findById(txn.category);
+          if (cat) txn.category = cat.name;
+        }
+        return txn;
+      })
+    );
 
     const csvBuffer = generateCSV(transactions);
 
-    // Log export only for free users
     if (isFreeUser(req.user)) {
       await ExportLog.create({ userId, type: 'csv' });
     }
@@ -76,29 +79,33 @@ router.post('/csv', authenticate, async (req, res) => {
 router.post('/pdf', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
-    console.log('📥 [PDF] Export requested by user:', userId.toString());
 
     if (isFreeUser(req.user)) {
       const count = await ExportLog.countDocuments({ userId });
-      console.log('📊 [PDF] Export count:', count);
-
       if (count >= FREE_LIMIT) {
-        console.log('🚫 [PDF] Limit reached');
         return res.status(403).json({ message: 'PDF export limit reached' });
       }
     }
 
-    const transactions = await Transaction.find({ userId });
-    console.log('✅ [PDF] Transactions fetched:', transactions.length);
+    let transactions = await Transaction.find({ userId });
+
+    // 🔁 Convert category IDs to names (if needed)
+    transactions = await Promise.all(
+      transactions.map(async (txn) => {
+        if (/^[0-9a-fA-F]{24}$/.test(txn.category)) {
+          const cat = await Category.findById(txn.category);
+          if (cat) txn.category = cat.name;
+        }
+        return txn;
+      })
+    );
 
     const pdfBuffer = generatePDF(transactions);
 
     if (!pdfBuffer || pdfBuffer.length < 100) {
-      console.error('❌ [PDF] Invalid or empty PDF buffer');
       return res.status(500).json({ message: 'PDF generation failed' });
     }
 
-    // Log export only for free users
     if (isFreeUser(req.user)) {
       await ExportLog.create({ userId, type: 'pdf' });
     }
@@ -118,23 +125,17 @@ router.post('/log', authenticate, async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.user.id);
     const { type } = req.body;
 
-    console.log('📦 [LOG] Type:', type, '| User:', userId.toString());
-
     if (!['csv', 'pdf'].includes(type)) {
-      console.log('❌ [LOG] Invalid export type');
       return res.status(400).json({ message: 'Invalid export type' });
     }
 
     if (isFreeUser(req.user)) {
       const count = await ExportLog.countDocuments({ userId });
-      console.log('📊 [LOG] Export count:', count);
       if (count >= FREE_LIMIT) {
-        console.log('🚫 [LOG] Export limit reached');
         return res.status(403).json({ message: 'Export limit reached' });
       }
 
       await ExportLog.create({ userId, type });
-      console.log('✅ [LOG] Export recorded');
     }
 
     res.status(201).json({ message: 'Export logged' });

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Transaction = require('../models/transaction');
+const Category = require('../models/category'); // ✅ Import the Category model
 
 // ✅ Helper to detect free-tier users
 const isFreeUser = (user) => !user.isPremium && user.role !== 'admin';
@@ -22,6 +23,7 @@ exports.createTransaction = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.user.id);
     const { type, category, amount, date, description, currency } = req.body;
 
+    // ✅ Free plan check
     if (isFreeUser(req.user)) {
       const txnCount = await Transaction.countDocuments({ userId });
       if (txnCount >= 5) {
@@ -31,10 +33,16 @@ exports.createTransaction = async (req, res) => {
       }
     }
 
+    // ✅ Get category name from ID
+    const categoryDoc = await Category.findById(category);
+    if (!categoryDoc) {
+      return res.status(400).json({ message: 'Invalid category ID' });
+    }
+
     const txData = {
       userId,
       type,
-      category,
+      category: categoryDoc.name, // ✅ Save the name instead of the ID
       amount,
       date,
       description,
@@ -72,7 +80,12 @@ exports.updateTransaction = async (req, res) => {
     const { type, category, amount, date, description, currency } = req.body;
 
     if (type) tx.type = type;
-    if (category) tx.category = category;
+    if (category) {
+      const categoryDoc = await Category.findById(category);
+      if (categoryDoc) {
+        tx.category = categoryDoc.name; // ✅ Convert category ID to name
+      }
+    }
     if (amount) tx.amount = amount;
     if (date) tx.date = date;
     if (description) tx.description = description;
