@@ -1,20 +1,24 @@
+// Required Modules
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
+// Models
 const ExportLog = require('../models/exportlog');
 const Transaction = require('../models/transaction');
-const Category = require('../models/category'); // ✅ Added for category lookup
+const Category = require('../models/category'); // Added for category lookup
+// Middleware
 const authenticate = require('../middleware/authenticate');
+// Utility functions for generating files
 const { generateCSV, generatePDF } = require('../utils/exportGenerator');
 
 const FREE_LIMIT = 5;
 
-// ✅ Helper: Check if user is free-tier
+// Helper: Check if user is free-tier
 function isFreeUser(user) {
   return !user.isPremium && user.role !== 'admin';
 }
 
-// ✅ 1. Check export limit
+// 1. Check export limit
 router.post('/check', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
@@ -35,7 +39,7 @@ router.post('/check', authenticate, async (req, res) => {
   }
 });
 
-// ✅ 2. Export CSV
+// 2. Export CSV
 router.post('/csv', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
@@ -46,10 +50,10 @@ router.post('/csv', authenticate, async (req, res) => {
         return res.status(403).json({ message: 'CSV export limit reached' });
       }
     }
-
+    // Get all transactions of the user
     let transactions = await Transaction.find({ userId });
 
-    // 🔁 Convert category IDs to names (if needed)
+    //  Convert category IDs to names 
     transactions = await Promise.all(
       transactions.map(async (txn) => {
         if (/^[0-9a-fA-F]{24}$/.test(txn.category)) {
@@ -75,7 +79,7 @@ router.post('/csv', authenticate, async (req, res) => {
   }
 });
 
-// ✅ 3. Export PDF
+//  3. Export PDF
 router.post('/pdf', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
@@ -89,7 +93,7 @@ router.post('/pdf', authenticate, async (req, res) => {
 
     let transactions = await Transaction.find({ userId });
 
-    // 🔁 Convert category IDs to names (if needed)
+    //  Convert category IDs to names (if needed)
     transactions = await Promise.all(
       transactions.map(async (txn) => {
         if (/^[0-9a-fA-F]{24}$/.test(txn.category)) {
@@ -119,7 +123,7 @@ router.post('/pdf', authenticate, async (req, res) => {
   }
 });
 
-// ✅ 4. Log per-category exports
+// 4. Log per-category exports
 router.post('/log', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
@@ -129,6 +133,7 @@ router.post('/log', authenticate, async (req, res) => {
       return res.status(400).json({ message: 'Invalid export type' });
     }
 
+     // Limit check for free users
     if (isFreeUser(req.user)) {
       const count = await ExportLog.countDocuments({ userId });
       if (count >= FREE_LIMIT) {
@@ -145,4 +150,5 @@ router.post('/log', authenticate, async (req, res) => {
   }
 });
 
+// Export the router
 module.exports = router;

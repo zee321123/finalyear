@@ -1,5 +1,8 @@
+// Import React and hooks
 import React, { useState, useEffect, useContext } from "react";
+// Import NavLink for routing
 import { NavLink } from "react-router-dom";
+// Import icons from react-icons
 import {
   FaChartPie,
   FaPlus,
@@ -9,15 +12,18 @@ import {
   FaRedo,
   FaCog,
 } from "react-icons/fa";
-import { UserContext } from "../context/usercontext";
+import { UserContext } from "../context/usercontext"; // Import user context to get profile data
+// Import sidebar CSS styles
 import "./sidebar.css";
+// Get API URL from environment
 const API = import.meta.env.VITE_API_URL;
 
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { profile } = useContext(UserContext);
+  const [isOpen, setIsOpen] = useState(false);   // State for mobile sidebar toggle
+  const { profile } = useContext(UserContext);   // Get user profile data from context
 
+  // Collapse sidebar on window resize (desktop view)
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768) setIsOpen(false);
@@ -26,6 +32,7 @@ const Sidebar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Set avatar image from profile, fallback to default avatar
   const avatarSrc = profile.avatarUrl
    ? `${API}${profile.avatarUrl}`
     : "https://ui-avatars.com/api/?name=User&background=1abc9c&color=fff&rounded=true";
@@ -125,4 +132,5 @@ const Sidebar = () => {
   );
 };
 
+// Export the Sidebar component to use in the app layout
 export default Sidebar;

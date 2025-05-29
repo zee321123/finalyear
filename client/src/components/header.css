@@ -1,3 +1,4 @@
+/* Main header bar */
 .app-header {
   background-color: #ffffff;
   padding: 1rem 1.5rem;
@@ -14,7 +15,7 @@
   flex-wrap: wrap;
 }
 
-/* ✅ Modern Search Bar */
+/* Search bar container */
 .search-bar {
   position: relative;
   display: flex;
@@ -24,6 +25,7 @@
   max-width: 280px;
 }
 
+/* Input inside the search bar */
 .search-bar input {
   padding: 0.6rem 1rem 0.6rem 2.2rem;
   width: 100%;
@@ -35,6 +37,7 @@
   transition: border 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
+/* Input focus styles */
 .search-bar input:focus {
   outline: none;
   border-color: #1abc9c;
@@ -42,6 +45,7 @@
   box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.1);
 }
 
+/* Search icon inside input */
 .search-icon {
   position: absolute;
   left: 10px;
@@ -49,7 +53,7 @@
   font-size: 1.1rem;
 }
 
-/* Center Logo */
+/* Logo container */
 .header-logo {
   flex: 0 0 auto;
   display: flex;
@@ -57,6 +61,7 @@
   align-items: center;
 }
 
+/* Logo image styling */
 .header-logo img {
   height: 42px;
   width: auto;
@@ -65,7 +70,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Right-side actions */
+/* Header right side actions (e.g., notifications, upgrade) */
 .header-actions {
   display: flex;
   align-items: center;
@@ -73,7 +78,7 @@
   flex-shrink: 0;
 }
 
-/* 🔔 Notification Icon + Wrapper */
+/* Notification icon container */
 .notification-wrapper {
   position: relative;
   width: 24px;
@@ -81,9 +86,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 12px; /* ✅ spacing from upgrade button */
+  margin-right: 12px; 
 }
 
+/* Notification bell button */
 .notification-btn {
   background: none;
   border: none;
@@ -97,10 +103,12 @@
   transition: color 0.3s ease;
 }
 
+/* Hover effect on bell icon */
 .notification-btn:hover {
   color: #1abc9c;
 }
 
+/* Remove default focus styles */
 .notification-btn:focus,
 .notification-btn:focus-visible,
 .notification-btn:focus:not(:focus-visible) {
@@ -108,6 +116,7 @@
   box-shadow: none;
 }
 
+/* Red badge count on notification bell */
 .notification-badge {
   position: absolute;
   top: -4px;
@@ -123,7 +132,7 @@
   z-index: 2;
 }
 
-/* 🔽 Notification Dropdown */
+/* Notification dropdown panel */
 .notification-dropdown {
   position: absolute;
   top: 36px;
@@ -138,6 +147,7 @@
   animation: fadeSlideDown 0.3s ease;
 }
 
+/* Dropdown animation */
 @keyframes fadeSlideDown {
   from {
     opacity: 0;
@@ -149,6 +159,7 @@
   }
 }
 
+/* Dropdown title */
 .notification-dropdown h4 {
   font-size: 16px;
   margin-bottom: 10px;
@@ -156,6 +167,7 @@
   color: #111827;
 }
 
+/* Dropdown list container */
 .notification-dropdown ul {
   list-style: none;
   max-height: 220px;
@@ -164,6 +176,7 @@
   margin: 0;
 }
 
+/* Individual notification item */
 .notification-dropdown li {
   padding: 12px 10px;
   border-bottom: 1px solid #f1f1f1;
@@ -180,7 +193,7 @@
 }
 
 .notification-dropdown li.read {
-  opacity: 0.6;
+  opacity: 0.6; /* Faded look for read */
 }
 
 .notification-dropdown li.unread {
@@ -188,6 +201,7 @@
   background-color: #f9fdfd;
 }
 
+/* Dismiss or action button in notification */
 .notification-dropdown li button {
   background: none;
   border: none;
@@ -198,6 +212,7 @@
   padding: 0;
 }
 
+/* Message when no notifications */
 .notification-empty {
   text-align: center;
   padding: 16px 0;
@@ -206,7 +221,7 @@
   font-size: 14px;
 }
 
-/* ✅ Gradient Upgrade Button */
+/* Premium upgrade button */
 .upgrade-btn {
   background: linear-gradient(135deg, #1f7aec, #1abc9c);
   color: white;
@@ -220,6 +235,7 @@
   white-space: nowrap;
 }
 
+/* Upgrade button hover animation */
 .upgrade-btn:hover {
   background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
   background-size: 400% 400%;
@@ -229,16 +245,19 @@
   box-shadow: 0 0 12px rgba(26, 188, 156, 0.6);
 }
 
+/* Gradient animation */
 @keyframes animatedGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-
+/* Upgrade button press effect */
 .upgrade-btn:active {
   transform: scale(0.96);
 }
+
+/* Crown icon inside upgrade button */
 .upgrade-btn .crown-icon {
   display: inline-block;
   animation: crownPulse 1.5s infinite;
@@ -246,7 +265,7 @@
   font-size: 1rem;
 }
 
-
+/* Responsive layout adjustments */
 @media (max-width: 768px) {
     .app-header {
     flex-direction: column;
@@ -307,7 +326,7 @@
   }
 }
 
-/* ✅ Premium Display Button (non-clickable, same as upgrade) */
+/* Disabled button style for non-premium users */
 .disabled-premium {
   background: linear-gradient(135deg, #1f7aec, #1abc9c);
   color: white;
@@ -325,13 +344,14 @@
   display: inline-block;
 }
 
-/* Prevent hover effects on premium label */
+/* Prevent hover effects on disabled premium button */
 .disabled-premium:hover {
   transform: none;
   box-shadow: none;
   background: linear-gradient(135deg, #1f7aec, #1abc9c);
 }
 
+/* Pulse animation for the crown icon */
 @keyframes crownPulse {
   0%, 100% {
     transform: scale(1);
@@ -341,6 +361,7 @@
   }
 }
 
+/* Apply pulse animation to the crown icon inside the disabled button */
 .disabled-premium span[role="img"] {
   display: inline-block;
   animation: crownPulse 1.5s infinite;

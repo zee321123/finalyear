@@ -1,18 +1,18 @@
-// routes/notifications.js
+// Import required modules and middleware
 const express = require('express');
 const router = express.Router();
-const dayjs = require('dayjs');
-const Scheduled = require('../models/scheduledtransaction');
-const ExportLog = require('../models/exportlog'); // Make sure this exists
-const Transaction = require('../models/transaction');
-const authenticate = require('../middleware/authenticate');
+const dayjs = require('dayjs'); // Date utility library
+const Scheduled = require('../models/scheduledtransaction'); // Scheduled transactions model
+const ExportLog = require('../models/exportlog'); // Export tracking model
+const Transaction = require('../models/transaction'); // User transactions model
+const authenticate = require('../middleware/authenticate'); // Middleware to verify JWT token
 
 router.get('/', authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
     const notifications = [];
 
-    // 1. ✅ Upcoming Scheduled Transactions (within 3 days)
+    // 1.Upcoming Scheduled Transactions (within 3 days)
     const now = dayjs();
     const in3Days = now.add(3, 'day');
     const upcoming = await Scheduled.find({
@@ -27,7 +27,7 @@ router.get('/', authenticate, async (req, res) => {
       });
     }
 
-    // 2. ✅ Export Limit Warning (for free users)
+    // 2.Export Limit Warning (for free users)
     if (!req.user.isPremium) {
       const count = await ExportLog.countDocuments({ userId });
       if (count >= 4) {
@@ -38,7 +38,7 @@ router.get('/', authenticate, async (req, res) => {
       }
     }
 
-    // 3. ✅ Transaction Reminder (if no recent activity this week)
+    // 3.Transaction Reminder (if no recent activity this week)
     const weekAgo = now.subtract(7, 'day');
     const recentTxns = await Transaction.find({ userId, date: { $gte: weekAgo.toDate() } });
     if (recentTxns.length === 0) {
@@ -55,4 +55,5 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+// Export the router for use in the main server
 module.exports = router;

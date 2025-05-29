@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const authenticate = require('../middleware/authenticate');
 const Transaction = require('../models/transaction');
 
-// GET /api/receipts - list all receipts metadata
+// GET /api/receipts
+// Fetch metadata of all uploaded receipts for the logged-in user
 router.get('/', authenticate, async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
@@ -21,7 +22,8 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// GET /api/receipts/:id - return the raw receipt file
+// GET /api/receipts/:id
+// Fetch the actual receipt file by ID
 router.get('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
@@ -32,6 +34,7 @@ router.get('/:id', authenticate, async (req, res) => {
     if (!tx || tx.userId.toString() !== req.user.id || !tx.receipt?.data) {
       return res.status(404).json({ message: 'Receipt not found' });
     }
+    // Set the appropriate content type and return the file data
     res.contentType(tx.receipt.contentType);
     res.send(tx.receipt.data);
   } catch (err) {

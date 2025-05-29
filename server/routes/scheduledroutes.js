@@ -3,12 +3,12 @@ const router    = express.Router();
 const dayjs     = require('dayjs');
 const Scheduled = require('../models/scheduledtransaction');
 
-// ✅ Helper: check if user is on free plan
+// Check if user is on free plan (not premium or admin)
 function isFreeUser(user) {
   return !user.isPremium && user.role !== 'admin';
 }
 
-// ✅ Helper to compute nextRun
+// Calculate next run date based on frequency (monthly or yearly)
 function computeNextRun({ frequency, dayOfMonth, month }) {
   const now = dayjs();
   let next;
@@ -25,6 +25,7 @@ function computeNextRun({ frequency, dayOfMonth, month }) {
     }
   }
 
+  // Adjust day if dayOfMonth exceeds the month's limit (e.g., Feb 30)
   const dim = next.daysInMonth();
   const safeDay = Math.min(dayOfMonth, dim);
   next = next.date(safeDay);
@@ -32,7 +33,7 @@ function computeNextRun({ frequency, dayOfMonth, month }) {
   return next.toDate();
 }
 
-// ✅ GET all scheduled transactions
+// GET all scheduled rules for the logged-in user
 router.get('/', async (req, res) => {
   try {
     console.log('📅 [GET] Fetching schedules for user:', req.user.id);
@@ -44,11 +45,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ POST create a new schedule
+// POST new scheduled transaction rule
 router.post('/', async (req, res) => {
   try {
     const existingCount = await Scheduled.countDocuments({ userId: req.user.id });
 
+    // Enforce 2-rule limit for free users
     if (isFreeUser(req.user) && existingCount >= 2) {
       return res.status(403).json({
         error: 'Free plan limit reached. Upgrade to Premium to create more scheduled rules.'
@@ -89,7 +91,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ PUT update an existing schedule
+// PUT (update) an existing scheduled rule
 router.put('/:id', async (req, res) => {
   try {
     const {
@@ -128,8 +130,7 @@ router.put('/:id', async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 });
-
-// ✅ DELETE schedule
+// DELETE a scheduled rule
 router.delete('/:id', async (req, res) => {
   try {
     const deleted = await Scheduled.findOneAndDelete({

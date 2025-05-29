@@ -1,3 +1,4 @@
+// Import necessary libraries and components
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import './addtransaction.css';
@@ -6,10 +7,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaPlus } from 'react-icons/fa';
 
-
+// Get backend API URL from environment variables
 const API_URL = import.meta.env.VITE_API_URL;
 
-
+// Main AddTransaction component
 const AddTransaction = () => {
   const { categories, fetchCategories } = useContext(CategoryContext);
   const [form, setForm] = useState({
@@ -20,12 +21,14 @@ const AddTransaction = () => {
     description: '',
     currency: 'USD',
   });
+    // State for handling new category creation
   const [useNewCategory, setUseNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState({ name: '', type: 'expense' });
-  const [receiptFile, setReceiptFile] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ Loader state
+  const [receiptFile, setReceiptFile] = useState(null);   // File input state
+  const [user, setUser] = useState(null);   // Store user info to check premium/admin status
+  const [loading, setLoading] = useState(true);   // Loading state for initial data
 
+  // Currency options for the dropdown
   const currencyOptions = [
     { code: 'USD', symbol: '$' },
     { code: 'EUR', symbol: '€' },
@@ -34,6 +37,7 @@ const AddTransaction = () => {
     { code: 'AED', symbol: 'د.إ' },
   ];
 
+  // Fetch categories and user profile when component mounts
   useEffect(() => {
     const loadInitialData = async () => {
       const start = Date.now();
@@ -48,23 +52,28 @@ const AddTransaction = () => {
         console.error('Failed to fetch user info:', err);
       } finally {
         const elapsed = Date.now() - start;
-        const delay = Math.max(0, 2000 - elapsed); // ✅ Ensure 2 seconds
+        const delay = Math.max(0, 2000 - elapsed); 
         setTimeout(() => setLoading(false), delay);
       }
     };
     loadInitialData();
   }, [fetchCategories]);
 
+  // Determine if user is admin
   const isAdmin = user?.role === 'admin';
 
+  // Handle input changes for the main form
   const handleChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  // Handle input changes for new category creation
   const handleNewCategoryChange = e =>
     setNewCategory({ ...newCategory, [e.target.name]: e.target.value });
 
+  // Handle receipt file upload
   const handleFileChange = e => setReceiptFile(e.target.files[0]);
 
+  // Handle form submission to add a transaction
   const handleSubmit = async e => {
     e.preventDefault();
     try {
@@ -86,6 +95,7 @@ const AddTransaction = () => {
         fetchCategories();
       }
 
+       // Prepare form data including optional file upload
       const formData = new FormData();
       formData.append('type', form.type);
       formData.append('category', categoryValue);
@@ -95,17 +105,19 @@ const AddTransaction = () => {
       formData.append('currency', form.currency);
       if (receiptFile) formData.append('receipt', receiptFile);
 
+      // Send transaction data to backend
       await axios.post(`${API_URL}/api/transactions`, formData, {
         headers: { Authorization: `Bearer ${token}` },
         params: isAdmin ? { bypassLimit: true } : {}
       });
-
+      // Show success toast
       toast.success('✅ Transaction added successfully!', {
         position: 'top-center',
         autoClose: 3000,
         theme: 'colored',
       });
 
+       // Reset form and states
       setForm({
         type: 'expense',
         category: '',
@@ -119,6 +131,7 @@ const AddTransaction = () => {
       setReceiptFile(null);
     } catch (err) {
       console.error('Error adding transaction:', err);
+      // Handle error and show appropriate toast
       if (err.response && err.response.status === 403) {
         toast.error(err.response.data.message || '❌ Limit reached. Upgrade to Premium.', {
           position: 'top-center',
@@ -135,7 +148,7 @@ const AddTransaction = () => {
     }
   };
 
-  // ✅ Show loader
+  // Display loading spinner if data is not ready
   if (loading) {
     return (
       <div className="add-transaction-container loading-state">
@@ -151,6 +164,7 @@ const AddTransaction = () => {
     );
   }
 
+  // Main form rendering
   return (
     <div className="add-transaction-container">
       <h2>Add New Transaction</h2>
@@ -289,5 +303,5 @@ const AddTransaction = () => {
     </div>
   );
 };
-
+// Export the component
 export default AddTransaction;

@@ -1,33 +1,41 @@
+// Import necessary tools and hooks from React
 import React, { useState, useContext } from 'react';
+// Import React Router hooks for navigation
 import { useNavigate } from 'react-router-dom';
+// Import custom UserContext to update user profile after login
 import { UserContext } from '../context/usercontext';
+// Import form styles
 import './authform.css';
 
+// Get the backend API base URL from .env file
 const API_URL = import.meta.env.VITE_API_URL;
 
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');   // Define state variables for form inputs and UI conditions
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
-  const [forgotMode, setForgotMode] = useState(false);
-  const [is2FA, setIs2FA] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false); // Whether user is resetting password
+  const [is2FA, setIs2FA] = useState(false); // Whether user needs 2FA login
   const [loginUserId, setLoginUserId] = useState('');
-  const [toast, setToast] = useState({ type: '', message: '' });
-  const [showPassword, setShowPassword] = useState(false); // 👁️ Eye toggle state
+  const [toast, setToast] = useState({ type: '', message: '' }); // Toast notifications
+  const [showPassword, setShowPassword] = useState(false);  // Show/hide password
 
+  // Hooks for routing and context
   const navigate = useNavigate();
   const { setProfile } = useContext(UserContext);
 
+  // Show a toast message and auto-hide it after 3 seconds
   const showToast = (type, message) => {
     setToast({ type, message });
     setTimeout(() => setToast({ type: '', message: '' }), 3000);
   };
 
+  // Send OTP to user's email
   const handleSendOtp = async () => {
     if (!email) return showToast('error', 'Enter your email first');
     try {
@@ -49,6 +57,7 @@ const LoginForm = () => {
     }
   };
 
+  // Verify OTP input for password reset
   const handleVerifyOtp = async () => {
     try {
       const res = await fetch(`${API_URL}/auth/verify-otp`, {
@@ -69,6 +78,7 @@ const LoginForm = () => {
     }
   };
 
+  // Save token, user role, and profile to localStorage/context
   const finalizeLogin = async (token) => {
     localStorage.setItem('token', token);
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -77,6 +87,7 @@ const LoginForm = () => {
     const isPremium = role === 'admin' ? true : payload.isPremium;
     localStorage.setItem('isPremium', isPremium ? 'true' : 'false');
 
+    // Fetch and save user profile
     const profileRes = await fetch(`${API_URL}/api/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -86,13 +97,14 @@ const LoginForm = () => {
       avatarUrl: profile.avatarUrl || '',
       fullName: profile.fullName || '',
     });
-
+    // Reset form and navigate
     setEmail('');
     setPassword('');
     showToast('success', 'Login successful!');
     setTimeout(() => navigate('/dashboard'), 1500);
   };
 
+  // Handle regular login
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -120,6 +132,7 @@ const LoginForm = () => {
     }
   };
 
+  // Handle OTP verification for login
   const handleVerifyLoginOtp = async () => {
     try {
       const res = await fetch(`${API_URL}/auth/verify-login-otp`, {
@@ -143,6 +156,7 @@ const LoginForm = () => {
     }
   };
 
+// Handle password reset
  const handleResetPassword = async (e) => {
   e.preventDefault();
 
@@ -186,7 +200,7 @@ const LoginForm = () => {
   }
 };
 
-
+  // Redirect to backend Google login
   const handleGoogleLogin = () => {
     window.location.href = `${API_URL}/auth/google`;
   };
@@ -344,4 +358,5 @@ const LoginForm = () => {
   );
 };
 
+// Export the LoginForm component to use it in other parts of the app
 export default LoginForm;

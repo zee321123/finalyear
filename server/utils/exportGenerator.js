@@ -1,5 +1,5 @@
 const { jsPDF } = require('jspdf');
-require('jspdf-autotable'); // ✅ Patches jsPDF with autoTable
+require('jspdf-autotable'); // Patches jsPDF with autoTable
 
 const { Parser } = require('json2csv');
 

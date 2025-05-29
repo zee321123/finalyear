@@ -1,10 +1,11 @@
+// Import required models
 const Category = require('../models/category');
 const Transaction = require('../models/transaction');
 
-// ✅ Helper to identify free users
+// Helper function to check if the user is on a free plan (not premium and not admin)
 const isFreeUser = (user) => !user.isPremium && user.role !== 'admin';
 
-// ✅ GET categories
+// ====================== GET CATEGORIES ======================
 exports.getCategories = async (req, res) => {
   try {
     const categories = await Category
@@ -18,11 +19,12 @@ exports.getCategories = async (req, res) => {
   }
 };
 
-// ✅ CREATE category with duplicate check
+// ====================== CREATE CATEGORY ======================
 exports.createCategory = async (req, res) => {
   try {
     const { name, type } = req.body;
 
+    // Check if required fields are provided
     if (!name || !type) {
       return res.status(400).json({ message: 'Name and type are required' });
     }
@@ -35,6 +37,7 @@ exports.createCategory = async (req, res) => {
       });
     }
 
+      // Create and save the new category
     const category = new Category({ userId: req.user.id, name, type });
     await category.save();
     res.status(201).json(category);
@@ -47,7 +50,7 @@ exports.createCategory = async (req, res) => {
   }
 };
 
-// ✅ UPDATE category with duplicate name check
+// ====================== UPDATE CATEGORY ======================
 exports.updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -63,6 +66,7 @@ exports.updateCategory = async (req, res) => {
       return res.status(409).json({ message: 'You already have a category with this name.' });
     }
 
+    // Update the category by ID and return the updated document
     const category = await Category.findOneAndUpdate(
       { _id: id, userId: req.user.id },
       { name, type },
@@ -80,18 +84,18 @@ exports.updateCategory = async (req, res) => {
   }
 };
 
-// ✅ DELETE category and its associated transactions (corrected)
+// ====================== DELETE CATEGORY ======================
 exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Delete the category belonging to the user
     const deletedCategory = await Category.findOneAndDelete({ _id: id, userId: req.user.id });
 
     if (!deletedCategory) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    // ✅ DELETE associated transactions (by category ObjectId)
     await Transaction.deleteMany({ category: deletedCategory._id, userId: req.user.id });
 
     res.status(200).json({

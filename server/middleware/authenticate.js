@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // ✅ import the user model
+const User = require('../models/user'); //  import the user model
 
 module.exports = async (req, res, next) => {
   const header = req.headers.authorization;
@@ -15,13 +15,13 @@ module.exports = async (req, res, next) => {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
 
-    // ✅ Fetch full user from DB
+    // Fetch full user from DB
     const user = await User.findById(payload.id);
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
 
-    // ✅ Attach entire user to req.user
+    // Attach entire user to req.user
     req.user = user;
     next();
   } catch (err) {

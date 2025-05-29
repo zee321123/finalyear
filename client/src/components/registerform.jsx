@@ -1,19 +1,24 @@
+// Import React and necessary hooks
 import React, { useState, useEffect } from 'react';
+// Import CSS styles for form layout and design
 import './authform.css';
 
+// Load the API base URL from environment variables
 const API_URL = import.meta.env.VITE_API_URL;
 
 
 const RegisterForm = () => {
+  // Email, password, OTP inputs
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [isOtpSent, setIsOtpSent] = useState(false);   // State to control OTP flow
   const [isOtpVerified, setIsOtpVerified] = useState(false);
-  const [toast, setToast] = useState({ type: '', message: '' });
-  const [strength, setStrength] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // 👁️ Toggle state
+  const [toast, setToast] = useState({ type: '', message: '' });   // Toast message (for success/error)
+  const [strength, setStrength] = useState('');   // Password strength (Weak / Medium / Strong)
+  const [showPassword, setShowPassword] = useState(false);   // Show/hide password toggle
 
+  // Runs whenever password changes
   useEffect(() => {
     const evaluateStrength = (pwd) => {
       if (pwd.length < 6) return 'Weak';
@@ -23,11 +28,13 @@ const RegisterForm = () => {
     setStrength(evaluateStrength(password));
   }, [password]);
 
+  // Show toast and auto-dismiss after 3 seconds
   const showToast = (type, message) => {
     setToast({ type, message });
     setTimeout(() => setToast({ type: '', message: '' }), 3000);
   };
 
+  // Send OTP to the entered email
   const handleSendOtp = async () => {
     if (!email) return showToast('error', 'Please enter your email first');
 
@@ -50,6 +57,7 @@ const RegisterForm = () => {
     }
   };
 
+  // Verify OTP entered by user
   const handleVerifyOtp = async () => {
     try {
       const res = await fetch(`${API_URL}/auth/verify-otp`, {
@@ -70,6 +78,7 @@ const RegisterForm = () => {
     }
   };
 
+  // Submit registration form if OTP verified
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!isOtpVerified) return showToast('error', 'Please verify OTP first');
@@ -176,4 +185,5 @@ const RegisterForm = () => {
   );
 };
 
+// Export the RegisterForm component for use in other parts of the app
 export default RegisterForm;

@@ -1,20 +1,27 @@
+// Import necessary React tools and hooks
 import React, { useContext, useEffect, useState } from "react";
+// Import styling
 import "./header.css";
+// Import icons
 import { FiBell, FiSearch } from "react-icons/fi";
+// Import navigation tools from react-router
 import { useNavigate, useLocation } from "react-router-dom";
+// Import custom search context
 import { SearchContext } from "../context/searchcontext";
+// Get the backend API URL from environment variables
 const API = import.meta.env.VITE_API_URL;
 
 
 const Header = () => {
-  const { searchTerm, setSearchTerm } = useContext(SearchContext);
-  const navigate = useNavigate();
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);  // Access searchTerm and setSearchTerm from context
+  const navigate = useNavigate();   // Router hooks
   const location = useLocation();
 
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);   // Local state for notifications and dropdown
   const [showDropdown, setShowDropdown] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
 
+  // Fetch notifications and premium status on load or when URL query changes
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -23,6 +30,7 @@ const Header = () => {
       return;
     }
 
+    // Check if user is premium
     const checkPremiumStatus = async () => {
       try {
         console.log("📡 Fetching profile with token...");
@@ -43,8 +51,7 @@ const Header = () => {
           console.log("⚠️ isPremium was FALSE or MISSING");
         }
 
-        // ✅ Clean the URL if ?paid=true
-        if (location.search.includes("paid=true")) {
+        if (location.search.includes("paid=true")) {  
           console.log("🔁 Removing ?paid=true from URL");
           const url = new URL(window.location);
           url.searchParams.delete("paid");
@@ -55,6 +62,7 @@ const Header = () => {
       }
     };
 
+    // Fetch user notifications
     const fetchNotifications = async () => {
       try {
         const res = await fetch(`${API}/api/notifications`, {
@@ -73,21 +81,23 @@ const Header = () => {
     };
 
     console.log("🚀 useEffect triggered. Checking premium and notifications.");
-    fetchNotifications();
+    fetchNotifications();     // Call both functions
     checkPremiumStatus();
   }, [location.search]);
 
+  // Handle search form submit
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("🔍 Searching for:", searchTerm);
   };
 
+  // Mark a specific notification as read
   const markAsRead = (index) => {
     const updated = [...notifications];
     updated[index].read = true;
     setNotifications(updated);
   };
-
+  // Count unread notifications
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   console.log("🎯 isPremium state:", isPremium);
@@ -154,5 +164,5 @@ const Header = () => {
     </header>
   );
 };
-
+// Export the Header component
 export default Header;

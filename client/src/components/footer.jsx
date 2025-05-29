@@ -1,10 +1,14 @@
-// client/src/components/footer.jsx
+// Import React library for creating the component
 import React from 'react';
+// Import the CSS file to style the footer
 import './footer.css';
+// Import Instagram and Telegram icons from react-icons
 import { FaInstagram, FaTelegramPlane } from 'react-icons/fa';
 
+// Define the Footer component
 const Footer = () => {
   return (
+    // Footer container with class "footer" for styling
     <footer className="footer">
       <div className="footer-section left">
         <p>&copy; {new Date().getFullYear()} MoneyTrack</p>
@@ -39,4 +43,5 @@ const Footer = () => {
   );
 };
 
+// Export the Footer component so it can be used in other files
 export default Footer;

@@ -1,3 +1,4 @@
+// Import required modules
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -7,13 +8,14 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-// Multer setup
+// === Multer Setup to Handle Avatar Uploads ===
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, '../uploads/avatars');
     fs.mkdirSync(uploadPath, { recursive: true });
     cb(null, uploadPath);
   },
+  // Set filename using user ID
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     cb(null, `${req.user.id}${ext}`);
@@ -22,7 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const uploadAvatar = upload.single('avatar');
 
-// ✅ FIXED: GET /api/profile includes `twoFactorEnabled`
+// === GET /api/profile - Fetch User Profile ===
 router.get('/', authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select(
@@ -36,7 +38,7 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// POST /api/profile (update profile + avatar)
+// === POST /api/profile - Update Profile Info & Upload Avatar ===
 router.post('/', authenticate, (req, res, next) => {
   uploadAvatar(req, res, (err) => {
     if (err) {
@@ -75,7 +77,7 @@ router.post('/', authenticate, (req, res, next) => {
       avatarUrl: user.avatarUrl,
       email: user.email,
       currency: user.currency,
-      twoFactorEnabled: user.twoFactorEnabled // ✅ Include in response for sync
+      twoFactorEnabled: user.twoFactorEnabled 
     });
   } catch (err) {
     console.error('❌ Profile update error:', err);
@@ -83,7 +85,7 @@ router.post('/', authenticate, (req, res, next) => {
   }
 });
 
-// ✅ PUT /api/profile/currency (update user currency)
+// === PUT /api/profile/currency - Update User Currency ===
 router.put('/currency', authenticate, async (req, res) => {
   try {
     const { currency } = req.body;
@@ -101,7 +103,7 @@ router.put('/currency', authenticate, async (req, res) => {
   }
 });
 
-// ✅ GET /api/profile/currency (get current currency)
+// === GET /api/profile/currency - Fetch User Currency ===
 router.get('/currency', authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('currency');
@@ -112,4 +114,5 @@ router.get('/currency', authenticate, async (req, res) => {
   }
 });
 
+// Export all profile-related routes
 module.exports = router;

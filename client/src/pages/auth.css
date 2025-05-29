@@ -1,3 +1,4 @@
+/* Full page layout for authentication screens */
 .auth-page {
   height: 100vh;
   display: flex;
@@ -11,7 +12,7 @@
   overflow: hidden;
 }
 
-
+/* Gradient background animation */
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
@@ -23,8 +24,7 @@
     background-position: 0% 50%;
   }
 }
-
-/* ✅ Auth box animation (fade + zoom in) */
+/* Card-style container for login/register/forgot-password */
 .auth-container {
   background-color: #ffffff;
   padding: 40px 30px;
@@ -41,6 +41,7 @@
   transform: scale(0.95);
 }
 
+/* Fade and zoom animation on load */
 @keyframes fadeZoom {
   0% {
     opacity: 0;
@@ -51,7 +52,7 @@
     transform: scale(1) translateY(0);
   }
 }
-
+/* Styling for the heading/title */
 .auth-container h1 {
   margin: 0;
   font-size: 24px;
@@ -61,6 +62,7 @@
   transform: translateY(-10px);
 }
 
+/* Heading slide + fade animation */
 @keyframes slideFade {
   to {
     opacity: 1;
@@ -68,6 +70,7 @@
   }
 }
 
+/* Styling for button inside auth container */
 .auth-container button {
   padding: 12px 20px;
   background-color: #1a1a2e;
@@ -81,6 +84,7 @@
   transform: scale(1);
 }
 
+/* Hover effect for button */
 .auth-container button:hover {
   background-color: #16213e;
   transform: scale(1.03);

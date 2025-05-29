@@ -1,5 +1,5 @@
 :root {
-  --sidebar-width: 240px;
+  --sidebar-width: 240px; /* Width of the sidebar */
   --gradient-start: #2c3e50;
   --gradient-end: #34495e;
   --accent-color: #1abc9c;
@@ -10,7 +10,7 @@
   --sidebar-padding: 32px 20px;
 }
 
-/* ✅ Full Sidebar Layout */
+/* Main Sidebar Container */
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
@@ -30,11 +30,12 @@
   gap: 28px;
 }
 
-/* Sidebar slide-in animation */
+/* Sidebar visible (used on mobile toggle) */
 .sidebar.open {
   animation: slideIn 0.3s ease forwards;
 }
 
+/* Slide animation keyframes */
 @keyframes slideIn {
   0% {
     transform: translateX(-100%);
@@ -44,7 +45,7 @@
   }
 }
 
-/* ✅ Logo & Title */
+/* Header section with logo and title */
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -54,6 +55,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Logo styling */
 .sidebar-logo {
   height: 42px;
   width: 42px;
@@ -62,6 +64,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
+/* Title next to the logo */
 .sidebar-title {
   font-family: 'Orbitron', sans-serif;
   font-size: 20px;
@@ -92,6 +95,7 @@
   100% { background-position: 0% 50%; }
 }
 
+/* User profile image */
 .user-avatar {
   width: 48px;
   height: 48px;
@@ -101,11 +105,13 @@
   border: 2px solid var(--accent-color);
 }
 
+/* Text container for welcome and name */
 .user-info {
   display: flex;
   flex-direction: column;
 }
 
+/* Welcome text */
 .user-welcome {
   font-size: 12px;
   color: var(--text-muted);
@@ -113,6 +119,7 @@
   color: white;
 }
 
+/* User's name */
 .user-name {
   font-weight: 600;
   font-size: 16px;
@@ -124,7 +131,7 @@
   max-width: 140px;
 }
 
-/* ✅ Menu Navigation */
+/* Menu Navigation */
 .menu {
   list-style: none;
   padding: 0;
@@ -135,6 +142,7 @@
   flex-grow: 1;
 }
 
+/* Individual menu link */
 .menu-item {
   display: flex;
   align-items: center;
@@ -146,11 +154,13 @@
   transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
+/* Icon inside menu item */
 .menu-item .icon {
   margin-right: 12px;
   font-size: 20px;
 }
 
+/* Hover effect */
 .menu-item:hover {
   background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
   background-size: 400% 400%;
@@ -159,6 +169,7 @@
   transform: translateX(4px);
 }
 
+/* Active/current page */
 .active-link {
   background: var(--accent-color);
   color: #ffffff;
@@ -166,7 +177,7 @@
   box-shadow: 0 0 12px var(--active-glow);
 }
 
-/* ✅ Toggle Button (desktop hidden, mobile visible) */
+/* Toggle Button (desktop hidden, mobile visible) */
 .toggle-btn {
   display: none;
   position: fixed;
@@ -192,7 +203,7 @@
   background: var(--gradient-start);
 }
 
-/* ✅ Responsive Adjustments */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);

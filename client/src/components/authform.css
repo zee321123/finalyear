@@ -1,3 +1,4 @@
+/* Container for the authentication form */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -21,7 +22,7 @@
   margin-bottom: 12px;
 }
 
-/* ✅ Input wrapper with hover animation */
+/*Input wrapper with hover animation */
 .input-wrapper {
   position: relative;
   width: 100%;
@@ -69,7 +70,7 @@
   transform: translateY(-50%) translateX(2px);
 }
 
-/* ✅ Main button with hover effect */
+/*  Main button with hover effect */
 .primary-btn {
   background-color: #1a1a2e;
   color: white;
@@ -108,7 +109,7 @@
   margin: 0 10px;
 }
 
-/* ✅ Google button with hover effect */
+/* Google button with hover effect */
 .google-btn {
   display: flex;
   align-items: center;
@@ -139,7 +140,7 @@
   transform: scale(1.02);
 }
 
-/* ✅ Toast Styles */
+/* Toast Styles */
 .custom-toast {
   position: fixed;
   top: 20px;
@@ -164,7 +165,7 @@
   animation: toastEnter 0.4s ease forwards, toastExit 0.3s ease 2.7s forwards;
 }
 
-/* ✅ Toast Variants */
+/* Toast Variants */
 .custom-toast.success {
   background: linear-gradient(135deg, #16a34a, #22c55e);
 }
@@ -177,7 +178,7 @@
   background: linear-gradient(135deg, #3b82f6, #60a5fa);
 }
 
-/* ✅ Toast Animations */
+/*Toast Animations */
 @keyframes toastEnter {
   0% {
     opacity: 0;
