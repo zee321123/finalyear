@@ -1,16 +1,23 @@
+// Import React dependencies and necessary hooks
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Import user context and styles
 import { UserContext } from '../context/usercontext';
 import './settings.css';
+
+// Import icons for buttons and feedback
 import { FaSave, FaSignOutAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
+// Load environment variable for API base URL
 const API_URL = import.meta.env.VITE_API_URL;
 
-
+// Settings component
 export default function Settings() {
   const navigate = useNavigate();
   const { setProfile: setGlobalProfile, resetProfile } = useContext(UserContext);
 
+  // State for user profile and other UI states
   const [profile, setProfile] = useState({
     fullName: '',
     businessName: '',
@@ -26,14 +33,14 @@ export default function Settings() {
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
   const fileInputRef = useRef(null);
 
- useEffect(() => {
-  console.log("✅ API_URL used:", API_URL); // 🔍 Add this
-  const start = Date.now();
-  const token = localStorage.getItem('token');
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    const start = Date.now();
+    const token = localStorage.getItem('token');
 
-  fetch(`${API_URL}/api/profile`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+    fetch(`${API_URL}/api/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then(res => res.json())
       .then(data => {
         setProfile({
@@ -53,10 +60,12 @@ export default function Settings() {
       });
   }, []);
 
+  // Submit profile updates
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     const formData = new FormData();
+
     formData.append('fullName', profile.fullName);
     formData.append('businessName', profile.businessName);
 
@@ -98,6 +107,7 @@ export default function Settings() {
     }
   };
 
+  // Handle avatar removal
   const handleDeleteAvatar = async () => {
     const token = localStorage.getItem('token');
     const formData = new FormData();
@@ -128,12 +138,14 @@ export default function Settings() {
     }
   };
 
+  // Handle logout confirmation
   const handleLogout = () => {
     localStorage.removeItem('token');
     resetProfile();
     navigate('/', { replace: true });
   };
 
+  // Toggle 2FA setting
   const handleToggle2FA = async () => {
     if (!profile.isPremium) {
       return setMessage('🔒 2FA is only available for premium users.');
@@ -167,6 +179,7 @@ export default function Settings() {
     }
   };
 
+  // Show loading spinner while fetching profile
   if (loading) {
     return (
       <div className="settings-container loading-state">
@@ -182,12 +195,14 @@ export default function Settings() {
     );
   }
 
+  // Main settings form layout
   return (
     <div className="settings-container">
       <h1>Profile Settings</h1>
 
       {message && <div className="settings-notice">{message}</div>}
 
+      {/* Avatar section */}
       <div className="avatar-section">
         <div className="avatar-wrapper" onClick={() => fileInputRef.current.click()}>
           {avatarFile ? (
@@ -212,6 +227,7 @@ export default function Settings() {
         />
       </div>
 
+      {/* User profile update form */}
       <form className="settings-form" onSubmit={handleSubmit}>
         <label>
           Email
@@ -238,6 +254,7 @@ export default function Settings() {
           />
         </label>
 
+        {/* 2FA toggle for premium users */}
         <div className="toggle-row">
           <label htmlFor="2fa-toggle" className="toggle-label">
             2-Factor Authentication (OTP on Login)
@@ -259,6 +276,7 @@ export default function Settings() {
           </label>
         </div>
 
+        {/* Submit and logout buttons */}
         <button type="submit" className="btn-save">
           <FaSave style={{ marginRight: '8px' }} />
           Save Changes
@@ -270,6 +288,7 @@ export default function Settings() {
         </button>
       </form>
 
+      {/* Logout confirmation popup */}
       {showConfirmLogout && (
         <div className="confirm-popup">
           <div className="confirm-box">

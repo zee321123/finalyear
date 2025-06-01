@@ -1,49 +1,56 @@
+/* =============================
+   Main Footer Styling
+============================= */
 
 /* Main footer container styling */
 .footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 1.5rem 2rem;
-  background: linear-gradient(to right, #1abc9c, #1f7aec); /* MoneyTrack theme */
-  color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  justify-content: space-between;            /* Distribute sections evenly */
+  align-items: center;                       /* Vertically center content */
+  flex-wrap: wrap;                           /* Allow items to wrap on smaller screens */
+  padding: 1.5rem 2rem;                      /* Inner spacing */
+  background: linear-gradient(to right, #1abc9c, #1f7aec); /*  MoneyTrack theme gradient */
+  color: #ffffff;                            /* White text for contrast */
+  font-family: 'Inter', sans-serif;          /* Modern, clean font */
   font-size: 0.95rem;
-  border-top-left-radius: 12px;
+  border-top-left-radius: 12px;              /* Rounded corners on top */
   border-top-right-radius: 12px;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
-  margin-top: auto;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);/* Soft shadow for depth */
+  margin-top: auto;                          /* Push footer to bottom */
   position: relative;
-  z-index: 10;
+  z-index: 10;                               /* Ensure visibility over lower elements */
 }
 
-/* Shared styling for each section inside the footer */
+/* =============================
+   Footer Section Styling
+============================= */
+
+/* Base styling for all footer sections */
 .footer-section {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.2rem;                                /* Spacing between items */
   margin: 0.5rem 0;
 }
 
-/* Text inside the left section */
+/* Left section text (e.g., copyright) */
 .footer-section.left p {
   margin: 0;
   font-weight: 500;
   letter-spacing: 0.3px;
 }
 
-/* Links inside the center section */
+/* Center section links (e.g., Terms, Privacy) */
 .footer-section.center a {
   color: #ffffff;
   text-decoration: none;
   font-weight: 500;
   position: relative;
-  padding-bottom: 2px;
+  padding-bottom: 2px;                        /* Space for underline */
   transition: color 0.3s ease;
 }
 
-/* Animated underline effect for center links */
+/* Underline animation setup */
 .footer-section.center a::after {
   content: '';
   position: absolute;
@@ -55,36 +62,40 @@
   transition: width 0.3s ease;
 }
 
-/* Hover effect: change link color */
+/* On hover, change link color */
 .footer-section.center a:hover {
   color: #f0f0f0;
 }
 
-/* Hover effect: animate underline width */
+/* On hover, animate underline to full width */
 .footer-section.center a:hover::after {
   width: 100%;
 }
 
-/* Text styling for right section labels */
+/* Right section label (e.g., "Follow us:") */
 .footer-section.right span {
   margin-right: 0.5rem;
   font-weight: 500;
 }
 
-/* Social icons or links in the right section */
+/* Social icons or contact links */
 .footer-section.right a {
   color: #ffffff;
   font-size: 1.25rem;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
-/* Hover effect for right section links */
+/* Hover effect: scale and lighten icon color */
 .footer-section.right a:hover {
   transform: scale(1.2);
   color: #f0f0f0;
 }
 
-/*Responsive Footer */
+/* =============================
+   Responsive Footer Styling
+============================= */
+
+/* Stack sections vertically on tablets and phones */
 @media (max-width: 768px) {
   .footer {
     flex-direction: column;

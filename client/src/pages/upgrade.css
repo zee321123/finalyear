@@ -1,3 +1,6 @@
+/* ===============================
+   Upgrade Page Container Styling
+================================== */
 .upgrade-page {
   max-width: 1000px;
   margin: 3rem auto;
@@ -9,13 +12,18 @@
   text-align: center;
 }
 
+/* ===============================
+   Page Title
+================================== */
 .upgrade-page h1 {
   font-size: 2.4rem;
   margin-bottom: 2.5rem;
   color: #000000;
 }
 
-/* Feature Cards Grid */
+/* ===============================
+   Features Grid Layout
+================================== */
 .features-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -23,6 +31,9 @@
   margin-bottom: 2.5rem;
 }
 
+/* ===============================
+   Individual Feature Card
+================================== */
 .feature-card {
   background: #f9f9f9;
   padding: 2rem;
@@ -32,6 +43,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
 }
 
+/* Hover animation for feature card */
 .feature-card:hover {
   background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
   background-size: 400% 400%;
@@ -40,23 +52,27 @@
   transform: translateY(-6px);
   box-shadow: 0 0 14px rgba(26, 188, 156, 0.6);
 }
+
+/* Reusable animated gradient keyframes */
 @keyframes animatedGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-
-/* Change icon and text color on hover */
+/* Hover state for card text and icon */
 .feature-card:hover h3,
 .feature-card:hover p,
 .feature-card:hover .feature-icon {
   color: #ffffff;
 }
 
+/* ===============================
+   Feature Card Content
+================================== */
 .feature-icon {
   font-size: 2rem;
-  color: #1abc9c; /* ✅ Green icon */
+  color: #1abc9c;
   margin-bottom: 1rem;
   transition: color 0.3s ease;
 }
@@ -74,7 +90,9 @@
   transition: color 0.3s ease;
 }
 
-/* Buy Button */
+/* ===============================
+   Buy Premium Button
+================================== */
 .buy-button {
   background: linear-gradient(135deg, #1f7aec, #1abc9c);
   color: white;
@@ -88,6 +106,7 @@
   box-shadow: 0 4px 12px rgba(31, 122, 236, 0.3);
 }
 
+/* Hover effect for buy button */
 .buy-button:hover {
   background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
   background-size: 400% 400%;
@@ -97,18 +116,14 @@
   box-shadow: 0 0 14px rgba(26, 188, 156, 0.6);
 }
 
-@keyframes animatedGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-
+/* Pressed state effect */
 .buy-button:active {
   transform: scale(0.97);
 }
 
-/* Mobile Responsive */
+/* ===============================
+   Responsive Styling
+================================== */
 @media (max-width: 600px) {
   .upgrade-page {
     padding: 1.2rem;
@@ -131,6 +146,9 @@
   }
 }
 
+/* ===============================
+   Premium Icon Styling
+================================== */
 .premium-icon {
   font-size: 1.2em;
   color: gold;
@@ -144,6 +162,7 @@
   transform: scale(1.2);
 }
 
+/* Glowing pulsing effect for crown */
 @keyframes crownPulse {
   0% {
     transform: scale(1);

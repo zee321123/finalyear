@@ -1,6 +1,8 @@
-/* scheduled.css */
+/* ============================
+   Scheduled Page - Main Layout
+=============================== */
 
-/* Container and layout */
+/* Container styling for scheduled page */
 .scheduled-container {
   max-width: 800px;
   margin: 2rem auto;
@@ -12,6 +14,7 @@
   color: #333;
 }
 
+/* Header title with animation */
 .scheduled-header {
   font-family: 'Poppins', sans-serif;
   font-size: 2.2rem;
@@ -25,6 +28,7 @@
   animation: slideDown 0.6s ease-in-out;
 }
 
+/* Animated underline under header */
 .scheduled-header::after {
   content: '';
   display: block;
@@ -35,30 +39,23 @@
   border-radius: 5px;
   animation: underlineSlide 0.8s ease-in-out 0.3s forwards;
 }
+
+/* Slide down and underline animations */
 @keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes underlineSlide {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-  to {
-    width: 70px;
-    opacity: 1;
-  }
+  from { width: 0; opacity: 0; }
+  to { width: 70px; opacity: 1; }
 }
 
+/* ====================
+   Alert Messages
+==================== */
 
-/* Feedback messages */
+/* Shared message styling */
 .error-message,
 .success-message {
   padding: 0.75rem 1rem;
@@ -68,19 +65,25 @@
   font-weight: 500;
 }
 
+/* Error alert styling */
 .error-message {
   background-color: #fdecea;
   color: #b02a37;
   border: 1px solid #f5c2c7;
 }
 
+/* Success alert styling */
 .success-message {
   background-color: #e6ffed;
   color: #2d6a4f;
   border: 1px solid #b7e4c7;
 }
 
-/* Form styling */
+/* ====================
+   Form Styles
+==================== */
+
+/* Grid layout for the form */
 .scheduled-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -88,11 +91,13 @@
   margin-bottom: 2rem;
 }
 
+/* Form field layout */
 .form-group {
   display: flex;
   flex-direction: column;
 }
 
+/* Labels for form inputs */
 .form-group label {
   margin-bottom: 0.25rem;
   font-weight: 500;
@@ -100,6 +105,7 @@
   color: #555;
 }
 
+/* Input and select field styles */
 .form-group input,
 .form-group select {
   padding: 0.5rem;
@@ -109,6 +115,7 @@
   transition: border-color 0.2s;
 }
 
+/* Focus effect on inputs */
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
@@ -116,7 +123,11 @@
   box-shadow: 0 0 0 2px rgba(76, 154, 255, 0.2);
 }
 
-/* Buttons */
+/* ====================
+   Button Styles
+==================== */
+
+/* Primary button full width */
 .btn-primary.full-width {
   grid-column: span 2;
   padding: 0.75rem;
@@ -130,11 +141,11 @@
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
+/* Hover animation for primary button */
 .btn-primary.full-width:hover {
   background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
   background-size: 400% 400%;
   animation: animatedGradient 4s ease infinite;
-  color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 0 12px rgba(26, 188, 156, 0.6);
 }
@@ -145,11 +156,12 @@
   100% { background-position: 0% 50%; }
 }
 
-
+/* Button active (clicked) effect */
 .btn-primary.full-width:active {
   transform: scale(0.97);
 }
 
+/* Secondary (cancel) button */
 .btn-secondary.full-width {
   grid-column: span 2;
   padding: 0.75rem;
@@ -167,12 +179,17 @@
   background-color: #e1e1e1;
 }
 
-/* List styling (fallback) */
+/* ====================
+   Scheduled List + Table
+==================== */
+
+/* Fallback list styling */
 .scheduled-list {
   list-style: none;
   padding: 0;
 }
 
+/* List item box style */
 .scheduled-list li {
   background-color: #f7f9fc;
   border: 1px solid #e1eaf5;
@@ -182,7 +199,7 @@
   font-size: 0.95rem;
 }
 
-/* Table styling */
+/* Table layout for scheduled entries */
 .scheduled-table {
   width: 100%;
   border-collapse: collapse;
@@ -207,14 +224,15 @@
   background-color: #fafafa;
 }
 
+/* Action buttons inside table */
 .scheduled-table button {
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   border: none;
   border-radius: 0.3rem;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
   margin-right: 0.5rem;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 /* Edit button */
@@ -239,7 +257,10 @@
   transform: scale(1.02);
 }
 
-/* Responsive adjustments */
+/* ====================
+   Responsive Styles
+==================== */
+
 @media (max-width: 768px) {
   .scheduled-form {
     grid-template-columns: 1fr;
@@ -250,6 +271,7 @@
     grid-column: span 1;
   }
 
+  /* Stack table cells into block layout for small screens */
   .scheduled-table,
   .scheduled-table thead,
   .scheduled-table tbody,
@@ -278,6 +300,7 @@
     text-align: right;
   }
 
+  /* Label each cell with field name */
   .scheduled-table td:before {
     position: absolute;
     top: 50%;
@@ -290,7 +313,6 @@
     color: #555;
   }
 
-  /* Label each cell */
   .scheduled-table td:nth-of-type(1):before { content: "Title"; }
   .scheduled-table td:nth-of-type(2):before { content: "Type"; }
   .scheduled-table td:nth-of-type(3):before { content: "Amount"; }
@@ -299,6 +321,10 @@
   .scheduled-table td:nth-of-type(6):before { content: "Next Run"; }
   .scheduled-table td:nth-of-type(7):before { content: "Actions"; }
 }
+
+/* ====================
+   Toast Notification
+==================== */
 
 .toast-notification {
   position: fixed;
@@ -321,32 +347,29 @@
 }
 
 @keyframes slideFade {
-  from {
-    transform: translateX(-50%) translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
+/* ====================
+   Confirmation Modal
+==================== */
 
-/* 🧊 Confirmation Modal Overlay */
+/* Modal backdrop */
 .confirm-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(30, 41, 59, 0.6); /* dark transparent */
+  background: rgba(30, 41, 59, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
 }
 
-/* 💬 Confirmation Box */
+/* Modal box */
 .confirm-box {
   background: #ffffff;
   border-radius: 12px;
@@ -370,7 +393,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* 🎯 Confirmation Actions */
+/* Modal action buttons */
 .confirm-actions {
   display: flex;
   justify-content: center;
@@ -387,7 +410,7 @@
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-/* 🚫 Cancel Button */
+/* Cancel button in modal */
 .confirm-actions .btn.cancel {
   background-color: #e5e7eb;
   color: #1f2937;
@@ -398,7 +421,7 @@
   transform: scale(1.02);
 }
 
-/* 🗑️ Delete Button */
+/* Delete button in modal */
 .confirm-actions .btn.delete {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
@@ -409,20 +432,16 @@
   transform: scale(1.02);
 }
 
-/* 🔄 Smooth Fade-in Animation */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
+/* ====================
+   Loader Styles
+==================== */
 
-/* Full-height layout to center loader and prevent footer jump */
+/* Loader container */
 .scheduled-container.loading-state {
   min-height: 100vh;
   display: flex;
@@ -431,7 +450,7 @@
   background: var(--color-card-bg, #ffffff);
 }
 
-/* Bouncing dot loader (shared style) */
+/* Fancy dot loader */
 .fancy-loader {
   display: flex;
   flex-direction: column;
@@ -445,6 +464,7 @@
   gap: 0.5rem;
 }
 
+/* Animated dots */
 .dot-group .dot {
   width: 14px;
   height: 14px;
@@ -453,12 +473,8 @@
   animation: bounce 1.2s infinite ease-in-out;
 }
 
-.dot-group .dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.dot-group .dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.dot-group .dot:nth-child(2) { animation-delay: 0.2s; }
+.dot-group .dot:nth-child(3) { animation-delay: 0.4s; }
 
 .fancy-loader p {
   font-size: 1.2rem;
@@ -468,12 +484,6 @@
 }
 
 @keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-    opacity: 0.3;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
 }

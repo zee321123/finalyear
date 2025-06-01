@@ -1,15 +1,19 @@
+// Import necessary libraries
 import React from 'react';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import { saveAs } from 'file-saver';
+import { jsPDF } from 'jspdf'; // For generating PDF files
+import autoTable from 'jspdf-autotable'; // For creating tables in PDF
+import { saveAs } from 'file-saver'; // For saving files to the user's computer
 
+// API base URL from environment variable
 const API_URL = import.meta.env.VITE_API_URL;
 
-
+// Main component
 const TestExport = () => {
+  // Get user token and role from localStorage
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
 
+  // Dummy category data for testing export
   const dummyCat = {
     name: 'Test Category',
     transactions: [
@@ -18,9 +22,11 @@ const TestExport = () => {
     ],
   };
 
+  // Function to check if export is allowed for current user
   const checkExportAllowed = async () => {
     console.log('🧠 [TEST] Checking export limit...');
-    if (role === 'admin') return true;
+    if (role === 'admin') return true; // Admins have no limit
+
     try {
       const res = await fetch(`${API_URL}/api/export/check`, {
         method: 'POST',
@@ -38,6 +44,7 @@ const TestExport = () => {
     }
   };
 
+  // Function to log an export action (CSV or PDF)
   const logExport = async (type) => {
     console.log(`📦 [TEST] Logging export type: ${type}`);
     try {
@@ -59,8 +66,10 @@ const TestExport = () => {
     }
   };
 
+  // Function to export the dummy category data to CSV
   const exportCSV = async () => {
     console.log('🧪 [TEST] CSV button clicked');
+
     const allowed = await checkExportAllowed();
     if (!allowed) return;
 
@@ -74,11 +83,15 @@ const TestExport = () => {
       tx.amount.toFixed(2),
     ]);
     const csv = [header, ...rows].map((r) => r.join(',')).join('\n');
+
+    // Save CSV file
     saveAs(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'test_category.csv');
   };
 
+  // Function to export the dummy category data to PDF
   const exportPDF = async () => {
     console.log('🧪 [TEST] PDF button clicked');
+
     const allowed = await checkExportAllowed();
     if (!allowed) return;
 
@@ -86,6 +99,8 @@ const TestExport = () => {
     if (!logged) return;
 
     const doc = new jsPDF();
+
+    // Add table to PDF using autoTable
     autoTable(doc, {
       head: [['Date', 'Description', 'Amount']],
       body: dummyCat.transactions.map((tx) => [
@@ -95,10 +110,15 @@ const TestExport = () => {
       ]),
       startY: 20,
     });
+
+    // Add category name as title
     doc.text(dummyCat.name, 14, 15);
+
+    // Save PDF file
     doc.save('test_category.pdf');
   };
 
+  // Component UI
   return (
     <div style={{ padding: 30 }}>
       <h2>🧪 Test Export Buttons</h2>

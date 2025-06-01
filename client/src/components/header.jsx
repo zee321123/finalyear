@@ -149,7 +149,7 @@ const Header = () => {
           )}
         </div>
 
-        {/* ✅ Premium label or Upgrade button */}
+        {/*  Premium label or Upgrade button */}
         {isPremium ? (
           <span className="upgrade-btn disabled-premium">
             <span role="img" aria-label="crown" className="crown-icon">👑</span>Premium

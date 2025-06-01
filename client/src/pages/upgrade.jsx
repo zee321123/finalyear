@@ -1,5 +1,7 @@
 import React from 'react';
 import './upgrade.css';
+
+// Import icons for visual representation of each feature
 import {
   FaInfinity,
   FaFileExport,
@@ -7,17 +9,23 @@ import {
   FaCalendarAlt,
   FaGlobe,
   FaLock,
-  FaCrown, // ✅ Added premium crown icon
+  FaCrown, // Premium crown icon for the Buy button
 } from 'react-icons/fa';
+
 import { loadStripe } from '@stripe/stripe-js';
+
+// Get your backend API URL from environment variable
 const API_URL = import.meta.env.VITE_API_URL;
 
-// ✅ Replace with your actual Stripe publishable key
+// Initialize Stripe with your publishable key
 const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY');
 
+// Upgrade component to display premium features and handle payments
 export default function Upgrade() {
+  // Function to handle premium purchase with Stripe Checkout
   const handleBuyPremium = async () => {
     try {
+      // Send request to backend to create Stripe checkout session
       const res = await fetch(`${API_URL}/api/payment/create-checkout-session`, {
         method: 'POST',
         headers: {
@@ -29,18 +37,19 @@ export default function Upgrade() {
       const data = await res.json();
       const stripe = await stripePromise;
 
+      // Redirect user to Stripe checkout page
       if (data.url) {
         const sessionId = new URL(data.url).searchParams.get('session_id');
         if (sessionId) {
           stripe.redirectToCheckout({ sessionId });
         } else {
-          window.location.href = data.url; // fallback
+          window.location.href = data.url; // fallback if no session ID
         }
       } else {
         alert('Something went wrong with payment setup.');
       }
     } catch (err) {
-      console.error('❌ Payment Error:', err);
+      console.error('Payment Error:', err);
       alert('Payment failed. Try again.');
     }
   };
@@ -49,6 +58,7 @@ export default function Upgrade() {
     <div className="upgrade-page">
       <h1 className="upgrade-title">Unlock Premium 🚀</h1>
 
+      {/* Grid of premium features with icons and descriptions */}
       <div className="features-list">
         <div className="feature-card">
           <FaInfinity className="feature-icon" />
@@ -82,11 +92,11 @@ export default function Upgrade() {
         </div>
       </div>
 
+      {/* Buy Premium button with crown icon */}
       <button className="buy-button" onClick={handleBuyPremium}>
-  <FaCrown className="premium-icon" />
-  Buy Premium - $10.00/month
-</button>
-
+        <FaCrown className="premium-icon" />
+        Buy Premium - $10.00/month
+      </button>
     </div>
   );
 }

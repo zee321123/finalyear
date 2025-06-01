@@ -1,4 +1,5 @@
-/* SETTINGS CONTAINER */
+/* ========== SETTINGS CONTAINER ========== */
+/* Main settings container styling */
 .settings-container {
   max-width: 520px;
   margin: 3rem auto;
@@ -10,6 +11,7 @@
   color: #2d2d2d;
 }
 
+/* Settings title styling with animation and custom underline */
 .settings-container h1 {
   font-family: 'Poppins', sans-serif;
   font-size: 2.4rem;
@@ -23,6 +25,7 @@
   animation: slideDown 0.6s ease-in-out;
 }
 
+/* Animated underline below the h1 title */
 .settings-container h1::after {
   content: '';
   display: block;
@@ -34,29 +37,20 @@
   animation: underlineSlide 0.8s ease-in-out 0.3s forwards;
 }
 
+/* Slide-down animation for header */
 @keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
+/* Underline animation for title */
 @keyframes underlineSlide {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-  to {
-    width: 70px;
-    opacity: 1;
-  }
+  from { width: 0; opacity: 0; }
+  to { width: 70px; opacity: 1; }
 }
 
-/* AVATAR SECTION */
+/* ========== AVATAR SECTION ========== */
+/* Avatar image and delete button container */
 .avatar-section {
   position: relative;
   display: flex;
@@ -64,6 +58,7 @@
   margin-bottom: 2rem;
 }
 
+/* Circular wrapper for avatar image */
 .avatar-wrapper {
   position: relative;
   width: 120px;
@@ -75,10 +70,12 @@
   transition: box-shadow 0.3s ease;
 }
 
+/* Hover glow effect for avatar */
 .avatar-wrapper:hover {
   box-shadow: 0 0 10px rgba(31, 122, 236, 0.4);
 }
 
+/* Avatar image or placeholder */
 .avatar-img,
 .avatar-placeholder {
   width: 100%;
@@ -92,10 +89,12 @@
   color: #7d7d7d;
 }
 
+/* Hide input field for avatar file upload */
 .avatar-input {
   display: none;
 }
 
+/* Avatar delete icon styling */
 .avatar-delete {
   position: absolute;
   top: 6px;
@@ -115,17 +114,20 @@
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
+/* Hover effect for delete icon */
 .avatar-delete:hover {
   background: linear-gradient(135deg, #ef5350, #d32f2f);
   transform: scale(1.05);
 }
 
-/* FORM */
+/* ========== FORM ========== */
+/* Main form layout */
 .settings-form {
   display: flex;
   flex-direction: column;
 }
 
+/* Label and input group */
 .settings-form label {
   display: flex;
   flex-direction: column;
@@ -134,6 +136,7 @@
   font-weight: 500;
 }
 
+/* Input fields (text/email) */
 .settings-form input[type="text"],
 .settings-form input[type="email"] {
   width: 100%;
@@ -146,19 +149,21 @@
   box-sizing: border-box;
 }
 
-.settings-form input[type="text"]:focus,
-.settings-form input[type="email"]:focus {
+/* Focus state for input */
+.settings-form input:focus {
   border-color: #007bff;
   outline: none;
 }
 
+/* Readonly input style */
 .settings-form input[readonly] {
   background-color: #f1f1f1;
   color: #888;
   cursor: not-allowed;
 }
 
-/* BUTTONS */
+/* ========== BUTTONS ========== */
+/* Shared button styles */
 .btn-save,
 .btn-logout {
   width: 100%;
@@ -172,7 +177,7 @@
   transition: background-color 0.3s ease;
 }
 
-/* ✅ Save Changes Button */
+/* Save button with gradient and animation */
 .btn-save {
   background: linear-gradient(135deg, #1f7aec, #1abc9c);
   color: white;
@@ -184,7 +189,6 @@
   background: linear-gradient(270deg, #1abc9c, #1f7aec, #1abc9c);
   background-size: 400% 400%;
   animation: animatedGradient 4s ease infinite;
-  color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 0 12px rgba(26, 188, 156, 0.6);
 }
@@ -195,11 +199,12 @@
   100% { background-position: 0% 50%; }
 }
 
-
+/* Click effect on save */
 .btn-save:active {
   transform: scale(0.96);
 }
 
+/* Logout button styling */
 .btn-logout {
   background-color: #e74c3c;
   color: white;
@@ -209,13 +214,12 @@
   background-color: #c0392b;
 }
 
-/* LOGOUT CONFIRMATION */
+/* ========== LOGOUT CONFIRMATION ========== */
+/* Full screen overlay */
 .confirm-popup {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -223,6 +227,7 @@
   z-index: 9999;
 }
 
+/* Modal box for confirmation */
 .confirm-box {
   background: white;
   padding: 2rem;
@@ -232,18 +237,21 @@
   animation: fadeIn 0.3s ease forwards;
 }
 
+/* Text inside confirm box */
 .confirm-box p {
   margin-bottom: 1.5rem;
   font-size: 1.1rem;
   color: #333;
 }
 
+/* Confirm buttons layout */
 .confirm-buttons {
   display: flex;
   justify-content: center;
   gap: 1.2rem;
 }
 
+/* Confirm Yes button */
 .confirm-yes {
   background: linear-gradient(135deg, #1f7aec, #1abc9c);
   color: white;
@@ -256,16 +264,17 @@
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
+/* Hover and click effects */
 .confirm-yes:hover {
   background: linear-gradient(135deg, #1abc9c, #16a085);
   transform: scale(1.02);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
-
 .confirm-yes:active {
   transform: scale(0.96);
 }
 
+/* Confirm No button */
 .confirm-no {
   background: linear-gradient(135deg, #e57373, #ef5350);
   color: white;
@@ -283,11 +292,11 @@
   transform: scale(1.02);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
-
 .confirm-no:active {
   transform: scale(0.96);
 }
 
+/* Notification inside settings form */
 .settings-notice {
   text-align: center;
   background-color: #e8f4fd;
@@ -298,7 +307,8 @@
   margin-bottom: 1.5rem;
 }
 
-/* LOADING */
+/* ========== LOADING STATE ========== */
+/* Centered loading spinner */
 .settings-container.loading-state {
   min-height: 100vh;
   display: flex;
@@ -307,6 +317,7 @@
   background: var(--color-card-bg, #ffffff);
 }
 
+/* Loader animation layout */
 .fancy-loader {
   display: flex;
   flex-direction: column;
@@ -315,11 +326,11 @@
   animation: fadeIn 0.4s ease-in-out;
 }
 
+/* Three-dot loading indicator */
 .dot-group {
   display: flex;
   gap: 0.5rem;
 }
-
 .dot-group .dot {
   width: 14px;
   height: 14px;
@@ -327,7 +338,6 @@
   border-radius: 50%;
   animation: bounce 1.2s infinite ease-in-out;
 }
-
 .dot-group .dot:nth-child(2) {
   animation-delay: 0.2s;
 }
@@ -364,7 +374,8 @@
   }
 }
 
-/* ✅ TOGGLE */
+/* ========== TOGGLE SWITCH ========== */
+/* Toggle row container */
 .toggle-row {
   display: flex;
   align-items: center;
@@ -380,6 +391,7 @@
   gap: 1rem;
 }
 
+/* Toggle text label */
 .toggle-label {
   flex: 1;
   font-size: 1rem;
@@ -387,6 +399,7 @@
   color: #374151;
 }
 
+/* Toggle switch container */
 .switch {
   position: relative;
   display: inline-block;
@@ -394,12 +407,14 @@
   height: 26px;
 }
 
+/* Hide default checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
+/* Slider background */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -410,20 +425,23 @@
   border-radius: 34px;
 }
 
+/* Slider knob */
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px; width: 20px;
-  left: 3px; bottom: 3px;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
   background-color: white;
   transition: 0.4s;
   border-radius: 50%;
 }
 
+/* Checked toggle style */
 .switch input:checked + .slider {
   background-color: #1abc9c;
 }
-
 .switch input:checked + .slider:before {
   transform: translateX(24px);
 }

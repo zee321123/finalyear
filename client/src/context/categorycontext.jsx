@@ -1,7 +1,6 @@
-// Import React and required hooks
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 
-// Import the backend API URL from environment variables
 const API_URL = import.meta.env.VITE_API_URL;
 
 
@@ -11,30 +10,30 @@ export const CategoryContext = createContext({
   fetchCategories: () => Promise.resolve([])
 });
 
-// Context provider to wrap around components that need access to categories
+// provider component
 export function CategoryProvider({ children }) {
   const [categories, setCategories] = useState([]);
-  // Fetch categories from the backend API
+
   const fetchCategories = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`${API_URL}/api/categories`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}` // Send token in Authorization header
+          Authorization: `Bearer ${token}`
         }
       });
       if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
       const data = await res.json();
       setCategories(data);
-      return data; // Return data for optional reuse
+      return data;
     } catch (err) {
       console.error('Category fetch error:', err);
-      return []; // Return empty list on error
+      return [];
     }
   }, []);
 
-  // Automatically fetch categories when the component mounts
+  // load categories on mount
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);

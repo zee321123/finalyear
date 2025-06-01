@@ -1,70 +1,82 @@
+/* ====== Support Page Layout ====== */
 .support-page {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-  }
-  
-  .support-page h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #000000;
-  }
-  
-  .support-page h2 {
-    font-size: 1.25rem;
-    margin-top: 2rem;
-    color: black;
-  }
-  
-  .support-page a {
-    color: #1abc9c;
-    text-decoration: none;
-  }
-  
+  max-width: 800px; /* Limit width for readability */
+  margin: 2rem auto; /* Center the content vertically and horizontally */
+  padding: 1.5rem; /* Add spacing inside the container */
+  font-family: 'Inter', sans-serif; /* Use modern readable font */
+  line-height: 1.6; /* Improve text readability */
+}
 
+/* Main heading */
+.support-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #000000;
+}
+
+/* Subheadings */
+.support-page h2 {
+  font-size: 1.25rem;
+  margin-top: 2rem;
+  color: black;
+}
+
+/* Link styling */
+.support-page a {
+  color: #1abc9c; /* Teal accent color */
+  text-decoration: none;
+}
+
+/* ====== Social Links Section ====== */
 .social-links {
   margin-top: 2.5rem;
   text-align: center;
 }
 
+/* Social section heading */
 .social-links h2 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
   color: black;
 }
 
+/* Layout for icons */
 .icons {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.5rem; /* Space between icons */
 }
 
+/* Base icon styling */
 .icon {
   font-size: 2.5rem;
   transition: transform 0.3s ease, color 0.3s ease;
   cursor: pointer;
 }
 
+/* Instagram-specific color */
 .icon.instagram {
   color: #e1306c;
 }
 
+/* Telegram-specific color */
 .icon.telegram {
   color: #0088cc;
 }
 
+/* Hover effect for icons */
 .icon:hover {
-  transform: scale(1.2);
+  transform: scale(1.2); /* Slight zoom effect */
   opacity: 0.85;
 }
 
+/* ====== FAQ Section Styling ====== */
 .faq-container {
   margin-top: 1rem;
   border-top: 1px solid #ccc;
 }
 
+/* Each FAQ item */
 .faq-item {
   border-bottom: 1px solid #eee;
   padding: 1rem 0;
@@ -72,10 +84,12 @@
   transition: background 0.3s ease;
 }
 
+/* Hover background for better UX */
 .faq-item:hover {
   background: #f9f9f9;
 }
 
+/* Question styling */
 .faq-question {
   font-size: 1rem;
   font-weight: 600;
@@ -85,12 +99,14 @@
   align-items: center;
 }
 
+/* Icon next to question (e.g. arrow or plus) */
 .faq-icon {
   margin-left: 1rem;
   font-size: 1rem;
   color: #1abc9c;
 }
 
+/* Answer section that appears on toggle */
 .faq-answer {
   margin-top: 0.5rem;
   font-size: 0.95rem;
@@ -98,6 +114,7 @@
   line-height: 1.5;
 }
 
+/* Highlight question text when open */
 .faq-item.open .faq-question {
   color: #1abc9c;
 }

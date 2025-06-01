@@ -56,7 +56,7 @@ const Sidebar = () => {
 
         {/* Content Wrapper */}
         <div className="sidebar-content">
-          {/* ✅ Modern User Profile */}
+          {/* Modern User Profile */}
           <div className="sidebar-user">
             <img
               src={avatarSrc}

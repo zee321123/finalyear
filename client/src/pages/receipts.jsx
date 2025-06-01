@@ -73,7 +73,7 @@ export default function Receipts() {
     categoryMap[r.category]?.toLowerCase().includes(search)
   );
 
-  // ✅ Full-page loading screen
+  //  Full-page loading screen
   if (loading) {
     return (
       <div className="receipts-page loading-state">

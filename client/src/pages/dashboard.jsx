@@ -1,7 +1,12 @@
+// Core imports
 import React, { useEffect, useState, useContext, useRef, useCallback } from 'react';
 import './dashboard.css';
+
+// AOS animation library for smooth scroll reveal effects
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+
+// Chart.js setup and components
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,32 +18,35 @@ import {
   Legend,
 } from 'chart.js';
 import { Line, Pie } from 'react-chartjs-2';
+
+// Contexts for accessing global category and search data
 import { CategoryContext } from '../context/categorycontext';
 import { SearchContext } from '../context/searchcontext';
+
+// Toast notifications for feedback
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Tooltip,
-  Legend
-);
+// Register Chart.js modules
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
+// Backend API base URL
 const API_URL = import.meta.env.VITE_API_URL;
+
+// Color palette for pie chart slices
 const brightColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
+// Currency symbols mapping
 const getCurrencySymbol = (code) => {
   const symbols = { USD: '$', EUR: '€', GBP: '£', INR: '₹', AED: 'د.إ' };
   return symbols[code] || code;
 };
 
+// Summary card component for top financial metrics
 function SummaryCard({ title, value, prefix }) {
   const [displayValue, setDisplayValue] = useState(0);
 
+  // Animate number counting up
   useEffect(() => {
     const end = value;
     const duration = 1000;
@@ -71,6 +79,8 @@ function SummaryCard({ title, value, prefix }) {
 export default function Dashboard() {
   const { categories } = useContext(CategoryContext);
   const { searchTerm } = useContext(SearchContext);
+
+  // Dashboard state
   const [summary, setSummary] = useState({
     totalBalance: 0,
     incomeThisMonth: 0,
@@ -82,6 +92,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const hasShownToast = useRef(false);
 
+  // Fetch data from backend: summary, transactions, scheduled
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -106,12 +117,15 @@ export default function Dashboard() {
       const txData = await txRes.json();
       const schedData = await schedRes.json();
 
+      // Set financial summary
       setSummary({
         totalBalance: sumData.balance ?? 0,
         incomeThisMonth: sumData.totalIncome ?? 0,
         expensesThisMonth: sumData.totalExpenses ?? 0,
         netProfitLoss: (sumData.totalIncome ?? 0) - (sumData.totalExpenses ?? 0),
       });
+
+      // Set latest transactions and scheduled items
       setTransactions(txData);
       setScheduled(Array.isArray(schedData) ? schedData : []);
 
@@ -125,14 +139,13 @@ export default function Dashboard() {
     }
   }, []);
 
+  // Initial load: animation, payment toast, fetch data
   useEffect(() => {
     AOS.init({ duration: 800, once: true });
 
     const token = localStorage.getItem('token');
-
     if (window.location.search.includes('paid=true') && !hasShownToast.current) {
       hasShownToast.current = true;
-
       fetch(`${API_URL}/api/profile`, {
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +170,7 @@ export default function Dashboard() {
     fetchData();
   }, [fetchData]);
 
-  // Listen for transaction updates and refresh data
+  // Listen to custom event for updates
   useEffect(() => {
     const handler = () => {
       fetchData();
@@ -168,12 +181,14 @@ export default function Dashboard() {
     };
   }, [fetchData]);
 
+  // Get category name by ID
   const getCategoryName = id => {
     if (!id) return 'Uncategorized';
     const cat = categories.find(c => c._id === id);
     return cat ? cat.name : 'Uncategorized';
   };
 
+  // Filter and prepare data for dashboard
   const search = searchTerm.toLowerCase();
   const filteredTx = transactions.filter(tx =>
     tx.description?.toLowerCase().includes(search) ||
@@ -185,6 +200,7 @@ export default function Dashboard() {
     item.category?.toLowerCase().includes(search)
   );
 
+  // Get recent and upcoming items
   const recentTx = filteredTx.slice(0, 5);
   const upcoming = filteredScheduled
     .map((item) => ({ ...item, _parsedDate: new Date(item.nextRun) }))
@@ -192,6 +208,7 @@ export default function Dashboard() {
     .sort((a, b) => a._parsedDate - b._parsedDate)
     .slice(0, 5);
 
+  // Generate trend chart data (last 30 days)
   const today = new Date();
   const dates = [];
   const incomeByDate = {};
@@ -222,6 +239,7 @@ export default function Dashboard() {
     ],
   };
 
+  // Generate category pie chart data
   const categoryTotals = {};
   transactions.forEach((tx) => {
     if (tx.type === 'expense') {
@@ -243,6 +261,7 @@ export default function Dashboard() {
     ],
   };
 
+  // Show loader while loading
   if (loading) {
     return (
       <div className="dashboard-container loading-state">
@@ -258,9 +277,12 @@ export default function Dashboard() {
     );
   }
 
+  // Final UI layout
   return (
     <div className="dashboard-container">
       <ToastContainer />
+
+      {/* Summary cards */}
       <div className="summary-cards">
         <SummaryCard title="Total Balance" value={summary.totalBalance} prefix="$" />
         <SummaryCard title="Income This Month" value={summary.incomeThisMonth} prefix="+ $" />
@@ -268,6 +290,7 @@ export default function Dashboard() {
         <SummaryCard title="Net Profit/Loss" value={summary.netProfitLoss} prefix="$" />
       </div>
 
+      {/* Charts */}
       <div className="charts-container">
         <div className="chart-item" data-aos="fade-up">
           <h4>Income vs. Expenses (30d)</h4>
@@ -279,7 +302,9 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Lists */}
       <div className="details-container">
+        {/* Recent Transactions */}
         <div className="list-section" data-aos="fade-up">
           <h4>Recent Transactions</h4>
           <div className="tx-cards-container">
@@ -304,6 +329,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Upcoming Scheduled */}
         <div className="upcoming-scheduled-list" data-aos="fade-up" data-aos-delay="100">
           <h4>Upcoming Scheduled</h4>
           <ul>
@@ -332,6 +358,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-
-  
 }

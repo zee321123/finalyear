@@ -1,13 +1,16 @@
+// Import global styles
 import './App.css';
+
+// Import React Router components for navigation and routing
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
-// Context Providers
+// Import Context Providers for managing global state
 import { CategoryProvider } from './context/categorycontext';
 import { SearchProvider } from './context/searchprovider';
-import { UserProvider } from './context/userprovider'; // ✅ NEW: Handles real-time avatar/name updates
+import { UserProvider } from './context/userprovider'; // Handles live user updates (e.g., name, avatar)
 
-// Pages
+// Import all route pages
 import Auth from './pages/auth';
 import Dashboard from './pages/dashboard';
 import Categories from './pages/categories';
@@ -22,12 +25,15 @@ import Privacy from './pages/privacy';
 import Terms from './pages/terms';
 import TestExport from './pages/TestExport';
 
-// Layout Components
+// Import shared layout components
 import Sidebar from './components/sidebar';
 import Header from './components/header';
 import Footer from './components/footer';
 
-// ✅ Handles token passed via OAuth redirect
+/**
+ * TokenHandler checks the URL for an OAuth token after login and stores it in localStorage.
+ * This is useful for handling redirects after third-party authentication.
+ */
 function TokenHandler() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,15 +42,18 @@ function TokenHandler() {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
     if (token) {
-      localStorage.setItem('token', token);
-      navigate(location.pathname, { replace: true });
+      localStorage.setItem('token', token); // Save token for future requests
+      navigate(location.pathname, { replace: true }); // Remove token from URL
     }
   }, [location, navigate]);
 
   return null;
 }
 
-// ✅ Reusable Layout for authenticated pages
+/**
+ * DashboardLayout wraps authenticated pages with a sidebar, header, and footer.
+ * Used across all internal routes except Auth and TestExport.
+ */
 function DashboardLayout({ children }) {
   return (
     <div className="layout-wrapper">
@@ -58,6 +67,9 @@ function DashboardLayout({ children }) {
   );
 }
 
+/**
+ * Main App component that sets up routing, context providers, and layouts.
+ */
 function App() {
   return (
     <UserProvider>
@@ -66,7 +78,10 @@ function App() {
           <Router>
             <TokenHandler />
             <Routes>
+              {/* Public Route */}
               <Route path="/" element={<Auth />} />
+
+              {/* Private Routes with Layout */}
               <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
               <Route path="/categories" element={<DashboardLayout><Categories /></DashboardLayout>} />
               <Route path="/add-transaction" element={<DashboardLayout><AddTransaction /></DashboardLayout>} />
@@ -78,6 +93,8 @@ function App() {
               <Route path="/support" element={<DashboardLayout><Support /></DashboardLayout>} />
               <Route path="/privacy" element={<DashboardLayout><Privacy /></DashboardLayout>} />
               <Route path="/terms" element={<DashboardLayout><Terms /></DashboardLayout>} />
+
+              {/* Standalone test route (no layout wrapper) */}
               <Route path="/test-export" element={<TestExport />} />
             </Routes>
           </Router>

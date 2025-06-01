@@ -1,8 +1,9 @@
-// Support.jsx
+// Import required React hooks and icons
 import React, { useState } from 'react';
 import './support.css';
 import { FaInstagram, FaTelegramPlane, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
+// List of FAQs with questions and answers
 const faqs = [
   {
     question: 'How do I add a transaction?',
@@ -18,11 +19,13 @@ const faqs = [
   },
 ];
 
+// Functional component for Support page
 export default function Support() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(null); // Track which FAQ is open
 
+  // Toggle function for FAQ accordion
   const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
+    setOpenIndex(openIndex === index ? null : index); // Collapse if already open
   };
 
   return (
@@ -30,6 +33,7 @@ export default function Support() {
       <h1>Help & Support</h1>
       <p>If you have any questions, issues, or need help using MoneyTrack, you're in the right place.</p>
 
+      {/* FAQ Section */}
       <section>
         <h2>Frequently Asked Questions</h2>
         <div className="faq-container">
@@ -45,24 +49,37 @@ export default function Support() {
                   {openIndex === index ? <FaChevronUp /> : <FaChevronDown />}
                 </span>
               </div>
+              {/* Show answer if this FAQ is open */}
               {openIndex === index && <div className="faq-answer">{item.answer}</div>}
             </div>
           ))}
         </div>
       </section>
 
+      {/* Contact support section */}
       <section>
         <h2>Contact Support</h2>
         <p>Email us at <a href="mailto:moneytrackapp01@gmail.com">moneytrackapp01@gmail.com</a> for assistance.</p>
       </section>
 
+      {/* Social media links */}
       <section className="social-links">
         <h2>Follow Us On</h2>
         <div className="icons">
-          <a href="https://www.instagram.com/moneytrackofficial?igsh=dW52cXByYTNwdWNi" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a
+            href="https://www.instagram.com/moneytrackofficial?igsh=dW52cXByYTNwdWNi"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+          >
             <FaInstagram className="icon instagram" />
           </a>
-          <a href="https://t.me/moneytrackofficial" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+          <a
+            href="https://t.me/moneytrackofficial"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Telegram"
+          >
             <FaTelegramPlane className="icon telegram" />
           </a>
         </div>

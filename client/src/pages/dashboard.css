@@ -1,6 +1,7 @@
-/* Dashboard.css - Professional, modern design with animation */
+/* Google Font Import */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
+/* Theme Variables */
 :root {
   --font-sans: 'Inter', 'Segoe UI', sans-serif;
   --color-bg: #f4f6fa;
@@ -16,6 +17,7 @@
   --transition: 0.3s ease;
 }
 
+/* Global Styles */
 body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);
@@ -24,6 +26,7 @@ body {
   padding: 0;
 }
 
+/* Main Dashboard Container */
 .dashboard-container {
   max-width: 1200px;
   margin: auto;
@@ -31,7 +34,9 @@ body {
   box-sizing: border-box;
 }
 
-/* Summary Cards */
+/* =============================
+   Summary Cards
+============================= */
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -42,7 +47,6 @@ body {
 .card {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   padding: var(--spacing);
   border-radius: var(--border-radius);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -56,15 +60,15 @@ body {
 .card:hover {
   transform: translateY(-6px);
   background: rgba(26, 188, 156, 0.08);
-  border: 2px solid var(--color-accent);
+  border-color: var(--color-accent);
   box-shadow: 0 0 10px rgba(26, 188, 156, 0.3), 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
 .card h3 {
   font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
   color: var(--color-secondary);
+  margin-bottom: 0.5rem;
 }
 
 .card p {
@@ -74,7 +78,9 @@ body {
   color: var(--color-text);
 }
 
-/* Charts */
+/* =============================
+   Charts Section
+============================= */
 .charts-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -101,20 +107,20 @@ body {
   max-height: 320px !important;
 }
 
-/* Details Section */
+/* =============================
+   Recent Transactions List
+============================= */
 .details-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing);
 }
 
-/* ✅ Modernized Recent Transactions - Card Style */
 .list-section {
   background: linear-gradient(145deg, #ffffff, #f0f4f8);
   padding: var(--spacing);
   border-radius: var(--border-radius);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease-in-out;
   overflow-x: auto;
   border: 1px solid var(--color-border);
 }
@@ -122,8 +128,8 @@ body {
 .list-section h4 {
   font-size: 1.2rem;
   font-weight: 700;
-  margin-bottom: var(--spacing);
   color: var(--color-primary);
+  margin-bottom: var(--spacing);
   border-bottom: 1px solid #dbe3eb;
   padding-bottom: 0.5rem;
 }
@@ -177,10 +183,9 @@ body {
 }
 
 .tx-cat {
-  color: #000000 !important; /* dark gray */
-  background-color: transparent !important;
+  color: #000 !important;
+  background: transparent !important;
 }
-
 
 .tx-amount {
   font-size: 1.2rem;
@@ -196,14 +201,15 @@ body {
   color: #dc3545;
 }
 
-/* Upcoming Scheduled */
+/* =============================
+   Upcoming Scheduled List
+============================= */
 .upcoming-scheduled-list {
   background: linear-gradient(145deg, #ffffff, #f1f4f9);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   padding: var(--spacing);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .upcoming-scheduled-list h4 {
@@ -217,15 +223,15 @@ body {
 
 .upcoming-scheduled-list ul {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 .upcoming-scheduled-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffffff;
+  background: #fff;
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
   border-radius: 10px;
@@ -260,8 +266,8 @@ body {
   padding: 3px 10px;
   border-radius: 20px;
   display: inline-block;
-  margin-top: 4px;
   font-weight: 600;
+  margin-top: 4px;
   text-transform: capitalize;
 }
 
@@ -294,7 +300,9 @@ body {
   color: var(--color-text-light);
 }
 
-/* Responsive */
+/* =============================
+   Responsive Layout
+============================= */
 @media (max-width: 992px) {
   .charts-container,
   .details-container {
@@ -308,7 +316,9 @@ body {
   }
 }
 
-/* Enforced dark text */
+/* =============================
+   Typography Color Enforcement
+============================= */
 .dashboard-container h1,
 .dashboard-container h2,
 .dashboard-container h3,
@@ -319,7 +329,9 @@ body {
   color: #212529;
 }
 
-/* Animation */
+/* =============================
+   Animations
+============================= */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -331,7 +343,31 @@ body {
   }
 }
 
-/* Loader */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =============================
+   Loader Styling
+============================= */
 .dashboard-container.loading-state {
   min-height: 100vh;
   display: flex;
@@ -375,20 +411,3 @@ body {
   color: #5f6368;
   margin: 0;
 }
-
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-    opacity: 0.3;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-

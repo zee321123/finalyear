@@ -1,55 +1,60 @@
+/* Container for the Terms and Conditions page */
 .terms-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    line-height: 1.7;
+  max-width: 900px; /* Limits the content width */
+  margin: 2rem auto; /* Center the container with vertical spacing */
+  padding: 2rem; /* Internal spacing */
+  background-color: #ffffff; /* White background */
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06); /* Soft shadow for depth */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Professional font */
+  color: #333; /* Main text color */
+  line-height: 1.7; /* Improves readability */
+}
+
+/* Main heading styling */
+.terms-container h1 {
+  font-size: 2.5rem;
+  color: #000000;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Subheading styling */
+.terms-container h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  color: #2c3e50;
+}
+
+/* Paragraph styling */
+.terms-container p {
+  margin-bottom: 1.2rem;
+  font-size: 1rem;
+}
+
+/* Link styling */
+.terms-container a {
+  color: #1abc9c; /* Accent color */
+  text-decoration: none;
+  transition: 0.3s; /* Smooth hover effect */
+}
+
+/* Hover effect for links */
+.terms-container a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 600px) {
+  .terms-container {
+    padding: 1.5rem;
   }
-  
+
   .terms-container h1 {
-    font-size: 2.5rem;
-    color: #000000;
-    margin-bottom: 1rem;
-    text-align: center;
+    font-size: 2rem;
   }
-  
+
   .terms-container h2 {
-    font-size: 1.5rem;
-    margin-top: 2rem;
-    color: #2c3e50;
+    font-size: 1.25rem;
   }
-  
-  .terms-container p {
-    margin-bottom: 1.2rem;
-    font-size: 1rem;
-  }
-  
-  .terms-container a {
-    color: #1abc9c;
-    text-decoration: none;
-    transition: 0.3s;
-  }
-  
-  .terms-container a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Responsive */
-  @media (max-width: 600px) {
-    .terms-container {
-      padding: 1.5rem;
-    }
-  
-    .terms-container h1 {
-      font-size: 2rem;
-    }
-  
-    .terms-container h2 {
-      font-size: 1.25rem;
-    }
-  }
-  
+}

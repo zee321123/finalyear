@@ -1,78 +1,86 @@
+/* ========================
+   Privacy Policy Container
+=========================== */
 .privacy-container {
-  max-width: 960px;
-  margin: 2rem auto;
-  padding: 2.5rem;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  line-height: 1.8;
-  transition: all 0.3s ease-in-out;
+  max-width: 960px; /* Limit width for readability */
+  margin: 2rem auto; /* Center the container with vertical spacing */
+  padding: 2.5rem; /* Inner spacing */
+  background-color: #ffffff; /* Clean white background */
+  border-radius: 16px; /* Smooth rounded corners */
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06); /* Subtle outer shadow */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern readable font */
+  color: #333; /* Dark gray text for contrast */
+  line-height: 1.8; /* Better paragraph spacing */
+  transition: all 0.3s ease-in-out; /* Smooth transitions */
 }
 
+/* ======= Headings ======= */
 .privacy-container h1 {
-  font-size: 2.5rem;
-  color: #000000;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  font-size: 2.5rem; /* Large main heading */
+  color: #000000; /* Black text */
+  margin-bottom: 1.5rem; /* Space below heading */
+  text-align: center; /* Centered title */
 }
 
 .privacy-container h2 {
-  font-size: 1.5rem;
-  margin-top: 2rem;
-  color: #2c3e50;
+  font-size: 1.5rem; /* Section headings */
+  margin-top: 2rem; /* Space above each section */
+  color: #2c3e50; /* Dark blueish-gray color */
 }
 
+/* ======= Paragraph Text ======= */
 .privacy-container p {
-  margin-bottom: 1.2rem;
-  font-size: 1.05rem;
+  margin-bottom: 1.2rem; /* Space between paragraphs */
+  font-size: 1.05rem; /* Slightly larger than default */
 }
 
+/* ======= Links ======= */
 .privacy-container a {
-  color: #1abc9c;
-  text-decoration: none;
-  transition: color 0.2s ease-in-out;
+  color: #1abc9c; /* Teal link color */
+  text-decoration: none; /* Remove underline by default */
+  transition: color 0.2s ease-in-out; /* Smooth color change */
 }
 
 .privacy-container a:hover {
-  text-decoration: underline;
-  color: #16a085;
+  text-decoration: underline; /* Underline on hover */
+  color: #16a085; /* Darker teal on hover */
 }
 
-/* ✅ Mobile responsiveness */
+/* ========================
+   Mobile Responsiveness
+=========================== */
 @media (max-width: 768px) {
   .privacy-container {
-    padding: 1.5rem;
+    padding: 1.5rem; /* Reduce padding on tablets */
   }
 
   .privacy-container h1 {
-    font-size: 2rem;
+    font-size: 2rem; /* Smaller main title */
   }
 
   .privacy-container h2 {
-    font-size: 1.3rem;
+    font-size: 1.3rem; /* Smaller section titles */
   }
 
   .privacy-container p {
-    font-size: 1rem;
+    font-size: 1rem; /* Adjust paragraph size */
   }
 }
 
 @media (max-width: 480px) {
   .privacy-container {
-    padding: 1rem;
+    padding: 1rem; /* Tighter padding for small screens */
   }
 
   .privacy-container h1 {
-    font-size: 1.7rem;
+    font-size: 1.7rem; /* Even smaller heading */
   }
 
   .privacy-container h2 {
-    font-size: 1.1rem;
+    font-size: 1.1rem; /* Adjust section heading */
   }
 
   .privacy-container p {
-    font-size: 0.95rem;
+    font-size: 0.95rem; /* Slightly smaller paragraph font */
   }
 }

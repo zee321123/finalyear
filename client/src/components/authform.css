@@ -1,4 +1,6 @@
-/* Container for the authentication form */
+/* =============================
+   Container for Authentication Form
+============================= */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -10,6 +12,7 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* Title and subtitle of the form */
 .form-title {
   font-size: 24px;
   color: #1a1a2e;
@@ -22,17 +25,21 @@
   margin-bottom: 12px;
 }
 
-/*Input wrapper with hover animation */
+/* =============================
+   Input Field Styling with Hover Animation
+============================= */
 .input-wrapper {
   position: relative;
   width: 100%;
   transition: transform 0.3s ease;
 }
 
+/* Slight upward movement on hover */
 .input-wrapper:hover {
   transform: translateY(-2px);
 }
 
+/* Input field appearance */
 .input-wrapper input {
   width: 100%;
   padding: 12px 14px 12px 38px;
@@ -44,17 +51,20 @@
   background-color: white;
 }
 
+/* Input focus styling */
 .input-wrapper input:focus {
   border-color: #007bff;
   outline: none;
 }
 
+/* Input hover effect with shadow and icon shift */
 .input-wrapper:hover input {
   border-color: #1abc9c;
   box-shadow: 0 0 8px rgba(26, 188, 156, 0.4);
   padding-left: 42px;
 }
 
+/* Icon inside the input field */
 .input-icon {
   position: absolute;
   left: 12px;
@@ -66,11 +76,14 @@
   transition: transform 0.3s ease;
 }
 
+/* Slight icon movement on hover */
 .input-wrapper:hover .input-icon {
   transform: translateY(-50%) translateX(2px);
 }
 
-/*  Main button with hover effect */
+/* =============================
+   Main Button Styling
+============================= */
 .primary-btn {
   background-color: #1a1a2e;
   color: white;
@@ -83,13 +96,16 @@
   font-weight: 500;
 }
 
+/* Hover effect for the main button */
 .primary-btn:hover {
   background-color: #1abc9c;
   box-shadow: 0 0 10px rgba(26, 188, 156, 0.6);
   transform: scale(1.02);
 }
 
-/* Divider line */
+/* =============================
+   Divider Between Buttons
+============================= */
 .divider {
   display: flex;
   align-items: center;
@@ -100,6 +116,7 @@
   position: relative;
 }
 
+/* Horizontal line before and after the divider text */
 .divider::before,
 .divider::after {
   content: "";
@@ -109,7 +126,9 @@
   margin: 0 10px;
 }
 
-/* Google button with hover effect */
+/* =============================
+   Google Sign-in Button
+============================= */
 .google-btn {
   display: flex;
   align-items: center;
@@ -126,6 +145,7 @@
   transition: all 0.3s ease;
 }
 
+/* Google icon inside the button */
 .google-btn img.google-icon {
   width: 18px;
   height: 18px;
@@ -134,13 +154,16 @@
   padding: 2px;
 }
 
+/* Hover effect for Google button */
 .google-btn:hover {
   background-color: #1abc9c;
   box-shadow: 0 0 10px rgba(26, 188, 156, 0.6);
   transform: scale(1.02);
 }
 
-/* Toast Styles */
+/* =============================
+   Toast Notification Styles
+============================= */
 .custom-toast {
   position: fixed;
   top: 20px;
@@ -165,7 +188,7 @@
   animation: toastEnter 0.4s ease forwards, toastExit 0.3s ease 2.7s forwards;
 }
 
-/* Toast Variants */
+/* Toast background variants */
 .custom-toast.success {
   background: linear-gradient(135deg, #16a34a, #22c55e);
 }
@@ -178,7 +201,7 @@
   background: linear-gradient(135deg, #3b82f6, #60a5fa);
 }
 
-/*Toast Animations */
+/* Toast animation keyframes */
 @keyframes toastEnter {
   0% {
     opacity: 0;
@@ -197,7 +220,9 @@
   }
 }
 
-/* Password Strength Text */
+/* =============================
+   Password Strength Indicator
+============================= */
 .password-strength {
   font-size: 14px;
   margin-top: -10px;
@@ -206,6 +231,7 @@
   text-align: left;
 }
 
+/* Color indicators based on password strength */
 .password-strength.weak {
   color: #dc3545;
 }
@@ -218,7 +244,9 @@
   color: #28a745;
 }
 
-/* Logo Styling */
+/* =============================
+   Logo Styling with Animation
+============================= */
 .auth-logo-large {
   width: 100px;
   height: auto;
@@ -240,12 +268,15 @@
   }
 }
 
-/* Forgot password / back-to-login toggle */
+/* =============================
+   Extra Links (e.g., Forgot Password)
+============================= */
 .extra-links {
   margin-top: 8px;
   text-align: center;
 }
 
+/* Back to login or forgot password button */
 .back-link {
   display: flex;
   align-items: center;
@@ -263,12 +294,16 @@
   width: 100%;
 }
 
+/* Hover effect for back link */
 .back-link:hover {
   background-color: #1abc9c;
   box-shadow: 0 0 10px rgba(26, 188, 156, 0.6);
   transform: scale(1.02);
 }
 
+/* =============================
+   Password Input Field with Eye Toggle
+============================= */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -279,6 +314,7 @@
   flex: 1;
 }
 
+/* Eye icon for showing/hiding password */
 .toggle-eye {
   position: absolute;
   right: 12px;
