@@ -1,4 +1,7 @@
+// Load environment variables from .env file
 require('dotenv').config();
+
+// Core dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,6 +13,7 @@ const cron = require('node-cron');
 const dayjs = require('dayjs');
 const path = require('path');
 
+// Models and utilities
 const User = require('./models/user');
 const Otp = require('./models/otp');
 const sendOtp = require('./utils/sendOtp');
@@ -17,15 +21,20 @@ const Transaction = require('./models/transaction');
 const ScheduledTransaction = require('./models/scheduledtransaction');
 const authenticate = require('./middleware/authenticate');
 
+// Configure Passport (Google OAuth)
 require('./passport');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const SECRET = process.env.JWT_SECRET || 'secretkey';
+
+// Initialize Stripe with secret key
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Stripe Webhook
+/* ========== Stripe Webhook Endpoint ========== */
+// Must be defined before body-parser to use `express.raw`
 app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
+
 app.post('/api/payment/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
@@ -37,6 +46,7 @@ app.post('/api/payment/webhook', async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  // Handle successful payment
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const userId = session.metadata?.userId;
@@ -59,7 +69,7 @@ app.post('/api/payment/webhook', async (req, res) => {
   res.status(200).json({ received: true });
 });
 
-// CORS
+/* ========== CORS Configuration ========== */
 const allowedOrigins = ['http://localhost:5173', 'https://moneyapp01.netlify.app'];
 app.use(cors({
   origin: function (origin, callback) {
@@ -71,6 +81,7 @@ app.use(cors({
   credentials: true
 }));
 
+/* ========== Middleware ========== */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -80,10 +91,13 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Google Auth
+/* ========== Google OAuth Routes ========== */
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {
@@ -93,7 +107,7 @@ app.get('/auth/google/callback',
   }
 );
 
-// Routes
+/* ========== Main API Routes ========== */
 app.use('/api/reports', require('./routes/reportroutes'));
 app.use('/api/transactions', require('./routes/transactionroutes'));
 app.use('/api/receipts', require('./routes/receiptsroutes'));
@@ -104,13 +118,15 @@ app.use('/api/export', require('./routes/export'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payment', require('./routes/payment'));
 
+// Conditionally load scheduled routes with auth
 let scheduledRoutes = require('./routes/scheduledroutes');
 if (scheduledRoutes && typeof scheduledRoutes.default === 'function') scheduledRoutes = scheduledRoutes.default;
 app.use('/api/scheduled', authenticate, scheduledRoutes);
 
+// Default root route
 app.get('/', (req, res) => res.send('✅ Backend is running!'));
 
-// MongoDB Connection
+/* ========== MongoDB Connection and Server Bootstrapping ========== */
 if (!process.env.MONGO_URI) {
   console.error('❌ MONGO_URI is not defined.');
   process.exit(1);
@@ -121,12 +137,13 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true
 }).then(() => {
 
-  // Cron Job
+  /* ========== CRON JOB: Handle Scheduled Transactions ========== */
   cron.schedule('0 0 * * *', async () => {
     const now = dayjs();
     const due = await ScheduledTransaction.find({ nextRun: { $lte: now.toDate() } });
 
     for (const rule of due) {
+      // Create transaction
       await Transaction.create({
         userId: rule.userId,
         type: rule.type,
@@ -136,6 +153,7 @@ mongoose.connect(process.env.MONGO_URI, {
         description: rule.title
       });
 
+      // Schedule next run
       let next = dayjs(rule.nextRun);
       next = rule.frequency === 'monthly'
         ? next.add(1, 'month').date(rule.dayOfMonth)
@@ -146,7 +164,9 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
-  // Auth Routes
+  /* ========== AUTH ROUTES ========== */
+
+  // Send OTP
   app.post('/auth/send-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email is required' });
@@ -164,6 +184,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Verify OTP
   app.post('/auth/verify-otp', async (req, res) => {
     const { email, code } = req.body;
     if (!email || !code) return res.status(400).json({ message: 'Email and OTP code are required' });
@@ -182,6 +203,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // OTP-based password reset
   app.post('/auth/otp-reset-password', async (req, res) => {
     const { email, code, newPassword } = req.body;
 
@@ -200,7 +222,6 @@ mongoose.connect(process.env.MONGO_URI, {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
       await user.save();
-
       await Otp.deleteMany({ email });
 
       res.status(200).json({ message: '✅ Password has been reset successfully' });
@@ -210,6 +231,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Register new user
   app.post('/auth/register', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
@@ -233,6 +255,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Login user
   app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Email and password are required' });
@@ -244,6 +267,7 @@ mongoose.connect(process.env.MONGO_URI, {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
 
+      // If 2FA is enabled, send OTP
       if (user.twoFactorEnabled) {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
@@ -266,6 +290,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Verify OTP for login (2FA)
   app.post('/auth/verify-login-otp', async (req, res) => {
     const { userId, otp } = req.body;
     if (!userId || !otp) return res.status(400).json({ message: 'User ID and OTP are required' });
@@ -280,13 +305,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
       await Otp.deleteMany({ email: user.email });
 
-      const token = jwt.sign({
-        id: user._id,
-        email: user.email,
-        role: user.role,
-        isPremium: user.isPremium
-      }, SECRET, { expiresIn: '1d' });
-
+      const token = jwt.sign({ id: user._id, email: user.email, role: user.role, isPremium: user.isPremium }, SECRET, { expiresIn: '1d' });
       res.status(200).json({ message: 'OTP verified. Login successful', token });
     } catch (err) {
       console.error('OTP verification error:', err);
@@ -294,6 +313,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Toggle 2FA on/off
   app.put('/auth/toggle-2fa', authenticate, async (req, res) => {
     try {
       const user = await User.findById(req.user.id);
@@ -312,5 +332,7 @@ mongoose.connect(process.env.MONGO_URI, {
     }
   });
 
+  // Start server after DB connects
   app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
 }).catch((err) => console.error('❌ MongoDB connection error:', err));
